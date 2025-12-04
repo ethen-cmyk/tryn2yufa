@@ -1,0 +1,3652 @@
+<!DOCTYPE html>
+
+<html lang="ja" translate="no">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="google" content="notranslate">
+
+    <title>TRY N3 语法排序练习 V3 (标点强制移除)</title>
+
+    <style>
+
+        :root {
+
+            --bg: #0f172a;
+
+            --card: #ffffff;
+
+            --accent: #0ea5e9;
+
+            --accent-2: #22c55e;
+
+            --text: #1f2937;
+
+            --muted: #6b7280;
+
+            --chip: #fbbf24;
+
+            --chip-hover: #f59e0b;
+
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Noto Sans JP', 'Hiragino Sans', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at 20% 20%, rgba(14,165,233,0.12), transparent 26%),
+                        radial-gradient(circle at 80% 0%, rgba(34,197,94,0.12), transparent 22%),
+                        linear-gradient(180deg, #f9fbff 0%, #e9f2fb 100%);
+            color: var(--text);
+            margin: 0;
+            padding: clamp(14px, 3vw, 24px);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: auto;
+            background: var(--card);
+            padding: clamp(18px, 4vw, 32px);
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12);
+            border: 1px solid #e2e8f0;
+        }
+
+        h1 {
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: clamp(16px, 3vw, 22px);
+            padding-bottom: 10px;
+            border-bottom: 3px solid rgba(14, 165, 233, 0.25);
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grammar-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+            background: linear-gradient(120deg, rgba(14,165,233,0.1), rgba(34,197,94,0.08));
+            border: 1px solid rgba(14,165,233,0.18);
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grammar-info::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 20%, rgba(14,165,233,0.12), transparent 35%),
+                        radial-gradient(circle at 88% 10%, rgba(34,197,94,0.15), transparent 30%);
+            pointer-events: none;
+        }
+
+        .grammar-info p {
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grammar-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            height: auto;
+            padding: 0;
+            gap: 6px;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            font-weight: 700;
+            font-size: 13px;
+            color: #0f172a;
+            letter-spacing: 0.2px;
+        }
+
+        .hint-text { margin: 4px 0 14px; color: var(--muted); font-size: 14px; }
+
+        #question-area { margin-bottom: 14px; }
+
+        #shuffled-sentence {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px;
+            border: 1px dashed #cbd5e1;
+            min-height: 60px;
+            background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+            border-radius: 12px;
+        }
+
+        .word-chip {
+
+            background-color: var(--chip);
+
+            color: #2a2a2a;
+
+            padding: 10px 16px;
+
+            border-radius: 22px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            transition: transform 0.1s, background-color 0.2s, box-shadow 0.2s;
+
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex: 0 1 auto;
+
+            min-height: 44px;
+
+            padding: 10px 14px;
+
+            max-width: 100%;
+
+            text-align: center;
+
+            word-break: break-word;
+
+        }
+
+        .word-chip:hover { background-color: var(--chip-hover); transform: translateY(-1px); box-shadow: 0 5px 12px rgba(0,0,0,0.15); }
+
+        #answer-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px;
+            border: 1px solid rgba(34,197,94,0.45);
+            min-height: 60px;
+            background: linear-gradient(180deg, #f1fbf4 0%, #e9f8ef 100%);
+            border-radius: 12px;
+        }
+
+        .answer-chip {
+            background-color: var(--accent-2);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 22px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 3px 10px rgba(34,197,94,0.25);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 1 auto;
+            min-height: 44px;
+            max-width: 100%;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        .answer-chip:hover { background-color: #16a34a; }
+
+        .button-group { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+        button {
+
+            padding: 12px 14px;
+            font-size: 15px;
+            margin: 0;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.25s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            height: 46px;
+            font-weight: 700;
+        }
+
+        #check-button { background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: white; }
+
+        #check-button:hover { transform: translateY(-1px); }
+
+        #next-button { background: #475569; color: white; }
+
+        #next-button:hover { background: #334155; transform: translateY(-1px); }
+
+        #reset-button { background: #f43f5e; color: white; }
+
+        #reset-button:hover { background: #e11d48; transform: translateY(-1px); }
+
+        #progress-reset-button { background-color: #fde68a; color: #2a2a2a; }
+
+        #progress-reset-button:hover { background-color: #fcd34d; transform: translateY(-1px); }
+
+        #result-area {
+
+            padding: 12px 14px;
+            border-radius: 10px;
+            background-color: #fef2f2;
+            color: #991b1b;
+            display: none;
+
+        }
+
+        .correct { background-color: #d1fae5 !important; color: #065f46 !important; }
+
+        .result-sentence { margin-top: 8px; font-size: 1.05em; font-weight: bold; line-height: 1.6; }
+
+        .correct-sentence { color: #16a34a; }
+
+        .translation { color: #0ea5e9; font-style: italic; margin-top: 4px; }
+
+        .progress-container { margin: 10px 0 20px; }
+
+        .progress-text { font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); }
+
+        .progress-bar-wrap { width: 100%; height: 10px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #22c55e, #0ea5e9); width: 0%; transition: width 0.2s ease; }
+
+        .translation-hint-block { margin: 6px 0 12px; color: #111827; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; background: #f1f5f9; border-radius: 10px; }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* --- Mobile friendly tweaks --- */
+
+        @media (max-width: 720px) {
+
+            body { padding: 12px; }
+
+            .container { padding: 16px; border-radius: 12px; }
+
+            h1 { font-size: 1.3rem; margin-bottom: 14px; }
+
+            .grammar-info { font-size: 0.95rem; padding: 10px 12px; }
+
+            #question-area h3 { font-size: 1rem; margin: 10px 0; }
+
+            #shuffled-sentence, #answer-area { padding: 12px; gap: 8px; min-height: 52px; }
+
+            .word-chip, .answer-chip { padding: 8px 11px; font-size: 0.95rem; }
+
+            .button-group {
+
+                display: flex;
+
+                flex-wrap: wrap;
+
+                gap: 10px;
+
+                justify-content: center;
+
+                margin-top: 16px;
+
+            }
+
+            .button-group button {
+
+                flex: 1 1 calc(50% - 10px);
+
+                min-width: 140px;
+
+                margin: 0;
+
+            }
+
+            #result-area { font-size: 0.95rem; }
+
+        }
+
+        @media (max-width: 480px) {
+
+            body { padding: 10px; }
+
+            .container { padding: 14px; }
+
+            h1 { font-size: 1.2rem; }
+
+            .button-group { grid-template-columns: 1fr; }
+
+            .word-chip, .answer-chip { min-height: 42px; padding: 9px 12px; }
+
+            #shuffled-sentence, #answer-area { min-height: 48px; padding: 10px; }
+
+        }
+
+        /* Mini fireworks feedback (centered, lightweight) */
+        #mini-fireworks {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 900;
+            opacity: 0;
+            transition: opacity 120ms ease;
+        }
+
+        #fireworks-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 40%, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.65));
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 150ms ease;
+            z-index: 850;
+        }
+
+        .audio-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 8px 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .audio-toggle .switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 24px;
+        }
+
+        .audio-toggle .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .audio-toggle .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #cbd5e1;
+            transition: 0.2s;
+            border-radius: 24px;
+        }
+
+        .audio-toggle .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.2s;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .audio-toggle input:checked + .slider {
+            background-color: #22c55e;
+        }
+
+        .audio-toggle input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+    </style>
+
+</head>
+
+<body class="notranslate">
+
+<div class="container">
+
+    <h1>📝 TRY N2 语法排序练习 </h1>
+
+    <div class="progress-container">
+
+        <div class="progress-text">
+
+            <span>练习进度</span>
+
+            <span id="progress-label">0/0</span>
+
+        </div>
+
+        <div class="progress-bar-wrap">
+
+            <div id="progress-bar" class="progress-bar"></div>
+
+        </div>
+
+    </div>
+
+    <div class="grammar-info">
+
+        <p style="grid-column: 1 / span 1;"><span class="grammar-pill">当前语法点</span> <span id="current-grammar"></span></p>
+
+        <p style="grid-column: 2 / span 1; justify-self: end; text-align: right;"><span class="grammar-pill">题目</span> <span id="question-number">1</span></p>
+
+        <p><span class="grammar-pill">模式</span> <span id="mode-label">全题模式</span></p>
+
+        <p style="justify-self: end; text-align: right;"><span class="grammar-pill">错题数</span> <span id="wrong-count">0</span></p>
+
+    </div>
+
+    <p class="hint-text">按翻译提示排序，双击词块可听发音，点击即可移动词块。</p>
+
+    <div id="question-area">
+
+        <p class="translation-hint-block"><span style="font-size:16px;">💡</span><strong>参考翻译:</strong> <span id="translation-hint"></span></p>
+
+        <div class="question-header">
+            <h3 style="margin: 0;">打乱的词块:</h3>
+            <div class="audio-toggle">
+                <span>例句朗读</span>
+                <label class="switch">
+                    <input type="checkbox" id="reading-toggle" aria-label="开启或关闭例句朗读">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div id="shuffled-sentence"></div>
+
+        
+
+        <h3>作答区:</h3>
+
+        <div id="answer-area"></div>
+
+    </div>
+
+    <div class="button-group">
+
+        <button id="check-button">✅ 检查答案</button>
+
+        <button id="reset-button">🔄 重置句子</button>
+
+        <button id="next-button">➡️ 下一题</button>
+
+        <button id="wrong-mode-button" style="background-color:#c084fc;color:#fff;">错题重练</button>
+
+        <button id="all-mode-button" style="background-color:#94a3b8;color:#fff;">返回全题</button>
+
+        <button id="progress-reset-button" style="background-color:#ffc107;color:#333;">重置进度</button>
+
+    </div>
+
+    <div id="result-area">
+
+        <p id="result-message"></p>
+
+        <div id="correct-display">
+
+            <p><strong>正确句子:</strong> <span class="result-sentence correct-sentence" id="correct-japanese"></span></p>
+
+            <p><strong>中文翻译:</strong> <span class="result-sentence translation" id="correct-chinese"></span></p>
+
+        </div>
+
+    </div>
+
+    <p style="color:#28a745; font-weight: bold; margin-top: 18px;">**V4 升级版：句末标点强制移除 + 精确分词+ 烟花特效**</p>
+
+</div>
+
+<div id="fireworks-overlay" aria-hidden="true"></div>
+<canvas id="mini-fireworks" width="260" height="260" aria-hidden="true"></canvas>
+
+<script>
+
+    // --- 1. 语法数据（113条） ---
+
+    // (数据保持不变)
+
+    const grammarData = [
+  {
+    "grammar": "～に限り",
+    "sentence": "本日女性に限り、入場無料です。",
+    "translation": "仅限今天女性免费入场。"
+  },
+  {
+    "grammar": "～に限り",
+    "sentence": "関係者に限り、この部屋に入れます。",
+    "translation": "仅限相关人员可以进入这个房间。"
+  },
+  {
+    "grammar": "～に限り",
+    "sentence": "学生に限り、チケットが半額になります。",
+    "translation": "仅限学生，票价为半价。"
+  },
+  {
+    "grammar": "～に応じ",
+    "sentence": "能力に応じて給料が決まります。",
+    "translation": "工资根据能力决定。"
+  },
+  {
+    "grammar": "～に応じ",
+    "sentence": "参加者の年齢に応じて、コースを選べます。",
+    "translation": "可以根据参加者的年龄选择课程。"
+  },
+  {
+    "grammar": "～に応じ",
+    "sentence": "状況に応じて柔軟に対応してください。",
+    "translation": "请根据情况灵活应对。"
+  },
+  {
+    "grammar": "～にかかわらず",
+    "sentence": "天候にかかわらず試合を行います。",
+    "translation": "不论天气如何，比赛照常进行。"
+  },
+  {
+    "grammar": "～にかかわらず",
+    "sentence": "性別にかかわらず、誰でも応募できます。",
+    "translation": "不论性别，谁都可以报名。"
+  },
+  {
+    "grammar": "～にかかわらず",
+    "sentence": "昼夜にかかわらず、工事の音が続いている。",
+    "translation": "无论昼夜，施工的噪音一直持续。"
+  },
+  {
+    "grammar": "～て以来",
+    "sentence": "卒業して以来、会っていない。",
+    "translation": "自从毕业后，就没见过。"
+  },
+  {
+    "grammar": "～て以来",
+    "sentence": "日本に来て以来、和食が好きになった。",
+    "translation": "自从来到日本后就喜欢上了和食。"
+  },
+  {
+    "grammar": "～て以来",
+    "sentence": "彼と別れて以来、一度も連絡していない。",
+    "translation": "自从和他分手后一次也没联系。"
+  },
+  {
+    "grammar": "～をはじめ",
+    "sentence": "社長をはじめ、皆が参加した。",
+    "translation": "以社长为首，大家都参加了。"
+  },
+  {
+    "grammar": "～をはじめ",
+    "sentence": "校長をはじめ、多くの先生が式に出席した。",
+    "translation": "以校长为首，许多老师出席了典礼。"
+  },
+  {
+    "grammar": "～をはじめ",
+    "sentence": "東京をはじめ、大都市で物価が上がっている。",
+    "translation": "以东京为首，大城市的物价都在上涨。"
+  },
+  {
+    "grammar": "～ぶり",
+    "sentence": "5年ぶりに友達に会った。",
+    "translation": "时隔5年见到朋友。"
+  },
+  {
+    "grammar": "～ぶり",
+    "sentence": "久しぶりに実家へ帰った。",
+    "translation": "时隔许久回了一趟老家。"
+  },
+  {
+    "grammar": "～ぶり",
+    "sentence": "1か月ぶりに友人と会って話した。",
+    "translation": "一个月后再次和朋友见面聊天。"
+  },
+  {
+    "grammar": "～ながら",
+    "sentence": "音楽を聞きながら勉強する。",
+    "translation": "一边听音乐一边学习。"
+  },
+  {
+    "grammar": "～ながら",
+    "sentence": "歩きながら電話をしないでください。",
+    "translation": "请不要边走路边打电话。"
+  },
+  {
+    "grammar": "～ながら",
+    "sentence": "テレビを見ながらご飯を食べる。",
+    "translation": "边看电视边吃饭。"
+  },
+  {
+    "grammar": "～をきっかけに",
+    "sentence": "留学をきっかけに日本語を学んだ。",
+    "translation": "以留学为契机学习日语。"
+  },
+  {
+    "grammar": "～をきっかけに",
+    "sentence": "事故をきっかけに安全意識が高まった。",
+    "translation": "以那次事故为契机，安全意识提高了。"
+  },
+  {
+    "grammar": "～をきっかけに",
+    "sentence": "転職をきっかけに新しい街へ引っ越した。",
+    "translation": "以跳槽为契机搬到了新城市。"
+  },
+  {
+    "grammar": "～からには",
+    "sentence": "約束したからには守るべきだ。",
+    "translation": "既然约定了就应该遵守。"
+  },
+  {
+    "grammar": "～からには",
+    "sentence": "やると決めたからには、最後までやり抜く。",
+    "translation": "既然决定要做，就要坚持到最后。"
+  },
+  {
+    "grammar": "～からには",
+    "sentence": "参加するからには、全力を尽くしたい。",
+    "translation": "既然要参加，就想全力以赴。"
+  },
+  {
+    "grammar": "～以上は",
+    "sentence": "学生である以上は勉強すべきだ。",
+    "translation": "既然是学生就应该学习。"
+  },
+  {
+    "grammar": "～以上は",
+    "sentence": "約束した以上は、守らなければならない。",
+    "translation": "既然约定了，就必须遵守。"
+  },
+  {
+    "grammar": "～以上は",
+    "sentence": "引き受けた以上は、結果を出すべきだ。",
+    "translation": "既然接下了，就应交出结果。"
+  },
+  {
+    "grammar": "～上は",
+    "sentence": "決めた上は最後までやる。",
+    "translation": "既然决定了就做到最后。"
+  },
+  {
+    "grammar": "～上は",
+    "sentence": "引き受けた上は責任を持つべきだ。",
+    "translation": "既然接下来了，就应负起责任。"
+  },
+  {
+    "grammar": "～上は",
+    "sentence": "出席すると言った上は、遅れないでください。",
+    "translation": "既然说要出席，请不要迟到。"
+  },
+  {
+    "grammar": "～わけではない",
+    "sentence": "嫌いなわけではない。",
+    "translation": "并不是讨厌。"
+  },
+  {
+    "grammar": "～わけではない",
+    "sentence": "忙しいから行けないわけではない。",
+    "translation": "并非因为忙就不能去。"
+  },
+  {
+    "grammar": "～わけではない",
+    "sentence": "全部理解したわけではない。",
+    "translation": "并非全部都理解了。"
+  },
+  {
+    "grammar": "～ことなく",
+    "sentence": "彼は休むことなく働いた。",
+    "translation": "他不停地工作。"
+  },
+  {
+    "grammar": "～ことなく",
+    "sentence": "雨は止むことなく降り続いた。",
+    "translation": "雨一直下个不停。"
+  },
+  {
+    "grammar": "～ことなく",
+    "sentence": "彼女は迷うことなく決断した。",
+    "translation": "她毫不犹豫地做了决定。"
+  },
+  {
+    "grammar": "～にもかかわらず",
+    "sentence": "雨にもかかわらず試合は行われた。",
+    "translation": "尽管下雨，比赛仍进行了。"
+  },
+  {
+    "grammar": "～にもかかわらず",
+    "sentence": "体調が悪いにもかかわらず、彼は出勤した。",
+    "translation": "尽管身体不适，他仍然去上班了。"
+  },
+  {
+    "grammar": "～にもかかわらず",
+    "sentence": "警告を受けたにもかかわらず、彼は同じことを繰り返した。",
+    "translation": "尽管收到了警告，他仍然重复同样的事。"
+  },
+  {
+    "grammar": "～として",
+    "sentence": "学生として責任を持つ。",
+    "translation": "作为学生要有责任。"
+  },
+  {
+    "grammar": "～として",
+    "sentence": "親として子どもを守る。",
+    "translation": "作为父母要保护孩子。"
+  },
+  {
+    "grammar": "～として",
+    "sentence": "専門家として意見を述べる。",
+    "translation": "作为专家发表意见。"
+  },
+  {
+    "grammar": "～をめぐって",
+    "sentence": "環境問題をめぐって議論した。",
+    "translation": "围绕环境问题进行了讨论。"
+  },
+  {
+    "grammar": "～をめぐって",
+    "sentence": "遺産をめぐって家族が争った。",
+    "translation": "围绕遗产家人发生了争执。"
+  },
+  {
+    "grammar": "～をめぐって",
+    "sentence": "新しい政策をめぐって議論が続いている。",
+    "translation": "围绕新政策的讨论还在继续。"
+  },
+  {
+    "grammar": "～を問わない",
+    "sentence": "経験の有無を問わない。",
+    "translation": "不论有没有经验。"
+  },
+  {
+    "grammar": "～を問わない",
+    "sentence": "年齢を問わず参加できます。",
+    "translation": "不论年龄都可以参加。"
+  },
+  {
+    "grammar": "～を問わない",
+    "sentence": "国籍を問わない募集だ。",
+    "translation": "是不论国籍的募集。"
+  },
+  {
+    "grammar": "～というものではない",
+    "sentence": "努力すればいいというものではない。",
+    "translation": "并不是努力就行。"
+  },
+  {
+    "grammar": "～というものではない",
+    "sentence": "お金があれば幸せというものではない。",
+    "translation": "并非有钱就一定幸福。"
+  },
+  {
+    "grammar": "～というものではない",
+    "sentence": "謝れば何でも許されるというものではない。",
+    "translation": "并不是道歉就能解决一切。"
+  },
+  {
+    "grammar": "～かどうかはともかく",
+    "sentence": "行けるかどうかはともかく、準備は必要だ。",
+    "translation": "能不能去暂且不论，准备是必要的。"
+  },
+  {
+    "grammar": "～かどうかはともかく",
+    "sentence": "行けるかどうかはともかく、準備だけはしておこう。",
+    "translation": "能不能去暂且不论，至少先准备一下。"
+  },
+  {
+    "grammar": "～かどうかはともかく",
+    "sentence": "成功するかどうかはともかく、挑戦する価値はある。",
+    "translation": "能否成功暂且不论，挑战本身有价值。"
+  },
+  {
+    "grammar": "～にすぎない",
+    "sentence": "噂にすぎない。",
+    "translation": "只不过是传言而已。"
+  },
+  {
+    "grammar": "～にすぎない",
+    "sentence": "私はただの学生にすぎない。",
+    "translation": "我不过是个学生罢了。"
+  },
+  {
+    "grammar": "～にすぎない",
+    "sentence": "彼の話は憶測にすぎない。",
+    "translation": "他的说法不过是推测而已。"
+  },
+  {
+    "grammar": "～とは限らない",
+    "sentence": "高いものが必ずしも品質が良いとは限らない。",
+    "translation": "贵的不一定品质好。"
+  },
+  {
+    "grammar": "～とは限らない",
+    "sentence": "日本に住めば日本語が上手になるとは限らない。",
+    "translation": "住在日本也不一定日语会变好。"
+  },
+  {
+    "grammar": "～とは限らない",
+    "sentence": "努力しても結果が出るとは限らない。",
+    "translation": "努力也不一定有结果。"
+  },
+  {
+    "grammar": "～つつ",
+    "sentence": "反省しつつ、また同じミスをしてしまった。",
+    "translation": "一边反省却又犯了同样的错。"
+  },
+  {
+    "grammar": "～つつ",
+    "sentence": "危険を感じつつ、計画を進めた。",
+    "translation": "感到危险，却仍推进了计划。"
+  },
+  {
+    "grammar": "～つつ",
+    "sentence": "期待しつつも、不安が消えない。",
+    "translation": "心怀期待但不安挥之不去。"
+  },
+  {
+    "grammar": "～にわたって",
+    "sentence": "三日にわたって会議が行われた。",
+    "translation": "会议持续进行了三天。"
+  },
+  {
+    "grammar": "～にわたって",
+    "sentence": "広い範囲にわたって停電が起きた。",
+    "translation": "大范围内发生了停电。"
+  },
+  {
+    "grammar": "～にわたって",
+    "sentence": "十年にわたって研究を続けてきた。",
+    "translation": "持续研究了十年。"
+  },
+  {
+    "grammar": "～にかけて",
+    "sentence": "今夜から明日にかけて雨になるでしょう。",
+    "translation": "从今晚到明天可能下雨。"
+  },
+  {
+    "grammar": "～にかけて",
+    "sentence": "北海道から東北にかけて大雪が降った。",
+    "translation": "从北海道到东北下了大雪。"
+  },
+  {
+    "grammar": "～にかけて",
+    "sentence": "四月から五月にかけて花が咲く。",
+    "translation": "从四月到五月花会开放。"
+  },
+  {
+    "grammar": "～おそれがある",
+    "sentence": "この薬には副作用が出るおそれがある。",
+    "translation": "这种药可能出现副作用。"
+  },
+  {
+    "grammar": "～おそれがある",
+    "sentence": "台風で交通が止まるおそれがある。",
+    "translation": "台风可能导致交通中断。"
+  },
+  {
+    "grammar": "～おそれがある",
+    "sentence": "情報が漏れるおそれがあるので注意してください。",
+    "translation": "有信息泄露的可能，请注意。"
+  },
+  {
+    "grammar": "～とともに",
+    "sentence": "年を取るとともに考え方も変わった。",
+    "translation": "随着年龄增长，想法也变化了。"
+  },
+  {
+    "grammar": "～とともに",
+    "sentence": "家族とともに新しい町へ引っ越した。",
+    "translation": "与家人一起搬到新城市。"
+  },
+  {
+    "grammar": "～とともに",
+    "sentence": "春の到来とともに気温が上がった。",
+    "translation": "随着春天到来气温升高。"
+  },
+  {
+    "grammar": "～次第",
+    "sentence": "準備ができ次第、出発します。",
+    "translation": "一准备好就出发。"
+  },
+  {
+    "grammar": "～次第",
+    "sentence": "雨が止み次第、試合を再開する。",
+    "translation": "雨一停就重新开始比赛。"
+  },
+  {
+    "grammar": "～次第",
+    "sentence": "到着次第、連絡してください。",
+    "translation": "一到就请联系我。"
+  },
+  {
+    "grammar": "～たりして",
+    "sentence": "彼は忘れていたりして、まだ来ないのかも。",
+    "translation": "他可能忘了，所以还没来。"
+  },
+  {
+    "grammar": "～たりして",
+    "sentence": "道に迷ったりしているのかもしれない。",
+    "translation": "也许是迷路了。"
+  },
+  {
+    "grammar": "～たりして",
+    "sentence": "雨が降ったりして、イベントが中止になるかも。",
+    "translation": "可能下雨之类的，活动会取消。"
+  },
+  {
+    "grammar": "～どころじゃない",
+    "sentence": "忙しくて旅行どころじゃない。",
+    "translation": "太忙了，哪有功夫旅行。"
+  },
+  {
+    "grammar": "～どころじゃない",
+    "sentence": "今は冗談どころじゃない状況だ。",
+    "translation": "现在不是开玩笑的时候。"
+  },
+  {
+    "grammar": "～どころじゃない",
+    "sentence": "騒音がひどくて勉強どころじゃない。",
+    "translation": "噪音太大，根本无法学习。"
+  },
+  {
+    "grammar": "～ものの",
+    "sentence": "約束はしたものの、守れるか不安だ。",
+    "translation": "虽说约好了，但担心能否守住。"
+  },
+  {
+    "grammar": "～ものの",
+    "sentence": "免許は持っているものの、運転はほとんどしない。",
+    "translation": "虽然有驾照，但几乎不开车。"
+  },
+  {
+    "grammar": "～ものの",
+    "sentence": "安いものの、品質はあまり良くない。",
+    "translation": "虽然便宜但质量不太好。"
+  },
+  {
+    "grammar": "～ことに",
+    "sentence": "残念なことに、試験に落ちてしまった。",
+    "translation": "遗憾的是考试落榜了。"
+  },
+  {
+    "grammar": "～ことに",
+    "sentence": "嬉しいことに、志望校に合格した。",
+    "translation": "令人高兴的是考上了理想学校。"
+  },
+  {
+    "grammar": "～ことに",
+    "sentence": "驚いたことに、彼が辞めると言った。",
+    "translation": "令人吃惊的是他说要辞职。"
+  },
+  {
+    "grammar": "～にしては",
+    "sentence": "子どもにしてはよく頑張った。",
+    "translation": "作为孩子已经很努力了。"
+  },
+  {
+    "grammar": "～にしては",
+    "sentence": "初心者にしては上手だ。",
+    "translation": "作为初学者已经很厉害了。"
+  },
+  {
+    "grammar": "～にしては",
+    "sentence": "冬にしては暖かい。",
+    "translation": "作为冬天算暖和了。"
+  },
+  {
+    "grammar": "～ことがある",
+    "sentence": "ときどき映画を見ることがある。",
+    "translation": "有时会看电影。"
+  },
+  {
+    "grammar": "～ことがある",
+    "sentence": "夜眠れないことがある。",
+    "translation": "有时晚上睡不着。"
+  },
+  {
+    "grammar": "～ことがある",
+    "sentence": "昔はこの公園で遊んだことがある。",
+    "translation": "以前在这个公园玩过。"
+  },
+  {
+    "grammar": "～さえ〜ば",
+    "sentence": "君がいさえすれば何もいらない。",
+    "translation": "只要有你就什么都不要。"
+  },
+  {
+    "grammar": "～さえ〜ば",
+    "sentence": "説明さえ聞けば理解できる。",
+    "translation": "只要听过说明就能理解。"
+  },
+  {
+    "grammar": "～さえ〜ば",
+    "sentence": "時間さえあれば手伝います。",
+    "translation": "只要有时间就帮忙。"
+  },
+  {
+    "grammar": "～ようがない",
+    "sentence": "暗すぎて探しようがない。",
+    "translation": "太暗了，没法找。"
+  },
+  {
+    "grammar": "～ようがない",
+    "sentence": "連絡先がないから謝りようがない。",
+    "translation": "没有联系方式，没法道歉。"
+  },
+  {
+    "grammar": "～ようがない",
+    "sentence": "証拠がなければ信じようがない。",
+    "translation": "没有证据就没法相信。"
+  },
+  {
+    "grammar": "～あげく",
+    "sentence": "長い議論のあげく、結論は出なかった。",
+    "translation": "长时间讨论后还是没结论。"
+  },
+  {
+    "grammar": "～あげく",
+    "sentence": "迷ったあげく、何も買わずに帰った。",
+    "translation": "犹豫了半天，什么也没买就回去了。"
+  },
+  {
+    "grammar": "～あげく",
+    "sentence": "待ち続けたあげく、彼は来なかった。",
+    "translation": "一直等到最后他也没来。"
+  },
+  {
+    "grammar": "～ものじゃない",
+    "sentence": "夜遅くに大声で話すものじゃない。",
+    "translation": "深夜不该大声说话。"
+  },
+  {
+    "grammar": "～ものじゃない",
+    "sentence": "人の悪口を言うものじゃない。",
+    "translation": "不该说别人的坏话。"
+  },
+  {
+    "grammar": "～ものじゃない",
+    "sentence": "食べ物を粗末にするものじゃない。",
+    "translation": "不应该浪费食物。"
+  },
+  {
+    "grammar": "～てみる",
+    "sentence": "新しい味を試してみる。",
+    "translation": "试试新的味道。"
+  },
+  {
+    "grammar": "～てみる",
+    "sentence": "一度やってみる価値がある。",
+    "translation": "值得尝试一次。"
+  },
+  {
+    "grammar": "～てみる",
+    "sentence": "この方法で問題を解いてみる。",
+    "translation": "用这个方法试着解题。"
+  },
+  {
+    "grammar": "～ばかりに",
+    "sentence": "一言余計なことを言ったばかりに、雰囲気が悪くなった。",
+    "translation": "就因为多说了一句，气氛变差了。"
+  },
+  {
+    "grammar": "～ばかりに",
+    "sentence": "遅れたばかりに電車を逃した。",
+    "translation": "就因为晚了一步错过了电车。"
+  },
+  {
+    "grammar": "～ばかりに",
+    "sentence": "安さにつられたばかりに、質の悪い商品を買った。",
+    "translation": "仅仅因为便宜就买了质量差的商品。"
+  },
+  {
+    "grammar": "～ことはない",
+    "sentence": "心配することはない。",
+    "translation": "没必要担心。"
+  },
+  {
+    "grammar": "～ことはない",
+    "sentence": "そんなに急ぐことはない。",
+    "translation": "没必要那么着急。"
+  },
+  {
+    "grammar": "～ことはない",
+    "sentence": "謝ることはないよ。",
+    "translation": "不用道歉。"
+  },
+  {
+    "grammar": "～に応じて",
+    "sentence": "結果に応じて対応を変える。",
+    "translation": "根据结果调整对应。"
+  },
+  {
+    "grammar": "～に応じて",
+    "sentence": "個人の希望に応じてプランを選べる。",
+    "translation": "可以根据个人希望选择方案。"
+  },
+  {
+    "grammar": "～に応じて",
+    "sentence": "患者の状態に応じて治療を決める。",
+    "translation": "根据患者状态决定治疗。"
+  },
+  {
+    "grammar": "～というものだ",
+    "sentence": "人を騙すなんてひどいというものだ。",
+    "translation": "欺骗别人真是过分。"
+  },
+  {
+    "grammar": "～というものだ",
+    "sentence": "努力せずに成功しようとするのは虫が良すぎるというものだ。",
+    "translation": "不努力却想成功，未免太天真。"
+  },
+  {
+    "grammar": "～というものだ",
+    "sentence": "困っている人を助けるのが当然というものだ。",
+    "translation": "帮助有困难的人是理所当然的。"
+  },
+  {
+    "grammar": "～こそ",
+    "sentence": "あなたこそ頼りになる。",
+    "translation": "真正可靠的人是你。"
+  },
+  {
+    "grammar": "～こそ",
+    "sentence": "今こそ行動すべきだ。",
+    "translation": "现在正该行动。"
+  },
+  {
+    "grammar": "～こそ",
+    "sentence": "感謝こそ最大の礼儀だ。",
+    "translation": "感恩才是最大的礼节。"
+  },
+  {
+    "grammar": "～ことはなかった",
+    "sentence": "そんなに心配することはなかった。",
+    "translation": "没必要那么担心。"
+  },
+  {
+    "grammar": "～ことはなかった",
+    "sentence": "わざわざ来ることはなかったのに。",
+    "translation": "其实不用特地来的。"
+  },
+  {
+    "grammar": "～ことはなかった",
+    "sentence": "泣くことはなかったのに。",
+    "translation": "其实没必要哭。"
+  },
+  {
+    "grammar": "～だけ",
+    "sentence": "欲しいだけ食べていいよ。",
+    "translation": "想吃多少吃多少。"
+  },
+  {
+    "grammar": "～だけ",
+    "sentence": "今日は勉強するだけで終わった。",
+    "translation": "今天就只是学习结束了。"
+  },
+  {
+    "grammar": "～だけ",
+    "sentence": "この部屋だけ電気がついている。",
+    "translation": "只有这个房间亮着灯。"
+  },
+  {
+    "grammar": "～てたまらない",
+    "sentence": "会いたくてたまらない。",
+    "translation": "想见得不得了。"
+  },
+  {
+    "grammar": "～てたまらない",
+    "sentence": "暑くてたまらない。",
+    "translation": "热得受不了。"
+  },
+  {
+    "grammar": "～てたまらない",
+    "sentence": "腹が立ってたまらない。",
+    "translation": "气得不行。"
+  },
+  {
+    "grammar": "～わけにはいかない",
+    "sentence": "今日は休むわけにはいかない。",
+    "translation": "今天不能请假。"
+  },
+  {
+    "grammar": "～わけにはいかない",
+    "sentence": "大事な会議なので遅れるわけにはいかない。",
+    "translation": "重要会议不能迟到。"
+  },
+  {
+    "grammar": "～わけにはいかない",
+    "sentence": "秘密だから話すわけにはいかない。",
+    "translation": "因为是秘密不能说。"
+  },
+  {
+    "grammar": "～つもりで",
+    "sentence": "旅行に行ったつもりで貯金している。",
+    "translation": "当作要旅行一样在存钱。"
+  },
+  {
+    "grammar": "～つもりで",
+    "sentence": "冗談のつもりで言った。",
+    "translation": "我是当玩笑说的。"
+  },
+  {
+    "grammar": "～つもりで",
+    "sentence": "彼女の気持ちになったつもりで考えてみる。",
+    "translation": "试着站在她的立场考虑。"
+  },
+  {
+    "grammar": "～からすると",
+    "sentence": "服装からすると、彼は学生だろう。",
+    "translation": "从服装看他应该是学生。"
+  },
+  {
+    "grammar": "～からすると",
+    "sentence": "症状からすると風邪のようだ。",
+    "translation": "从症状来看像感冒。"
+  },
+  {
+    "grammar": "～からすると",
+    "sentence": "声の調子からすると疲れているようだ。",
+    "translation": "从声音看来他很累。"
+  },
+  {
+    "grammar": "～からすれば",
+    "sentence": "親からすれば子どもの健康が一番だ。",
+    "translation": "从父母角度看孩子健康最重要。"
+  },
+  {
+    "grammar": "～からすれば",
+    "sentence": "専門家からすれば簡単な問題らしい。",
+    "translation": "从专家看来是简单问题。"
+  },
+  {
+    "grammar": "～からすれば",
+    "sentence": "彼女からすればそれが正しい選択だった。",
+    "translation": "从她角度那是正确选择。"
+  },
+  {
+    "grammar": "～からして",
+    "sentence": "態度からして彼はやる気がない。",
+    "translation": "光看态度他就没干劲。"
+  },
+  {
+    "grammar": "～からして",
+    "sentence": "名前からして強そうだ。",
+    "translation": "光听名字就觉得强。"
+  },
+  {
+    "grammar": "～からして",
+    "sentence": "第一印象からして良かった。",
+    "translation": "从第一印象起就很好。"
+  },
+  {
+    "grammar": "～一方だ",
+    "sentence": "物価は上がる一方だ。",
+    "translation": "物价不断上涨。"
+  },
+  {
+    "grammar": "～一方だ",
+    "sentence": "仕事は増える一方で時間が足りない。",
+    "translation": "工作只增不减，时间不足。"
+  },
+  {
+    "grammar": "～一方だ",
+    "sentence": "人口は減る一方だ。",
+    "translation": "人口持续减少。"
+  },
+  {
+    "grammar": "～のみならず",
+    "sentence": "彼は英語のみならず中国語も話せる。",
+    "translation": "他不仅会英语还会中文。"
+  },
+  {
+    "grammar": "～のみならず",
+    "sentence": "平日のみならず週末も働いている。",
+    "translation": "不仅平日，周末也在工作。"
+  },
+  {
+    "grammar": "～のみならず",
+    "sentence": "彼女は歌のみならずダンスも得意だ。",
+    "translation": "她不仅会唱歌也擅长跳舞。"
+  },
+  {
+    "grammar": "～にとって",
+    "sentence": "私にとって家族が一番大切だ。",
+    "translation": "对我而言家人最重要。"
+  },
+  {
+    "grammar": "～にとって",
+    "sentence": "彼にとってこの仕事は挑戦だ。",
+    "translation": "对他来说这份工作是挑战。"
+  },
+  {
+    "grammar": "～にとって",
+    "sentence": "学生にとって時間は貴重だ。",
+    "translation": "对学生来说时间宝贵。"
+  },
+  {
+    "grammar": "～につれて",
+    "sentence": "時間が経つにつれて傷が癒えた。",
+    "translation": "随着时间过去伤口愈合了。"
+  },
+  {
+    "grammar": "～につれて",
+    "sentence": "年を重ねるにつれて味覚が変わった。",
+    "translation": "随着年龄增长味觉变了。"
+  },
+  {
+    "grammar": "～につれて",
+    "sentence": "春が近づくにつれて暖かくなった。",
+    "translation": "随着春天临近变暖了。"
+  },
+  {
+    "grammar": "～にしたがって",
+    "sentence": "指示にしたがって作業してください。",
+    "translation": "请按照指示作业。"
+  },
+  {
+    "grammar": "～にしたがって",
+    "sentence": "年齢が上がるにしたがって責任も増える。",
+    "translation": "随着年龄上升责任也增加。"
+  },
+  {
+    "grammar": "～にしたがって",
+    "sentence": "渋滞が解消するにしたがって速度が上がった。",
+    "translation": "堵车缓解后速度提升。"
+  },
+  {
+    "grammar": "～せざるを得ない",
+    "sentence": "状況が悪く、延期せざるを得ない。",
+    "translation": "情况不好，不得不延期。"
+  },
+  {
+    "grammar": "～せざるを得ない",
+    "sentence": "彼の提案を受け入れざるを得なかった。",
+    "translation": "不得不接受他的提案。"
+  },
+  {
+    "grammar": "～せざるを得ない",
+    "sentence": "引っ越しせざるを得ない事情ができた。",
+    "translation": "出现不得不搬家的情况。"
+  },
+  {
+    "grammar": "～に反して",
+    "sentence": "期待に反して結果はよくなかった。",
+    "translation": "与期待相反结果不好。"
+  },
+  {
+    "grammar": "～に反して",
+    "sentence": "命令に反して行動した。",
+    "translation": "违背命令行动。"
+  },
+  {
+    "grammar": "～に反して",
+    "sentence": "予想に反して雨が降らなかった。",
+    "translation": "与预想相反没下雨。"
+  },
+  {
+    "grammar": "～に関して",
+    "sentence": "新しい制度に関して説明します。",
+    "translation": "说明关于新制度。"
+  },
+  {
+    "grammar": "～に関して",
+    "sentence": "環境問題に関して意見を述べた。",
+    "translation": "就环境问题发表了意见。"
+  },
+  {
+    "grammar": "～に関して",
+    "sentence": "その件に関しては後日連絡します。",
+    "translation": "关于那件事改日联系。"
+  },
+  {
+    "grammar": "～にかけては",
+    "sentence": "料理にかけては彼にかなわない。",
+    "translation": "说到做饭比不过他。"
+  },
+  {
+    "grammar": "～にかけては",
+    "sentence": "走る速さにかけては誰にも負けない。",
+    "translation": "论跑得快谁也比不过。"
+  },
+  {
+    "grammar": "～にかけては",
+    "sentence": "交渉にかけては彼女が一番だ。",
+    "translation": "谈判方面她最强。"
+  },
+  {
+    "grammar": "～上",
+    "sentence": "安全上の理由で中止になった。",
+    "translation": "出于安全方面的原因取消了。"
+  },
+  {
+    "grammar": "～上",
+    "sentence": "法律上問題はない。",
+    "translation": "在法律层面没有问题。"
+  },
+  {
+    "grammar": "～上",
+    "sentence": "理論上は可能だが、実行は難しい。",
+    "translation": "理论上可行，但实践难。"
+  },
+  {
+    "grammar": "～つつある",
+    "sentence": "景気は回復しつつある。",
+    "translation": "经济正在复苏。"
+  },
+  {
+    "grammar": "～つつある",
+    "sentence": "温暖化が進みつつある。",
+    "translation": "全球变暖正在加剧。"
+  },
+  {
+    "grammar": "～つつある",
+    "sentence": "技術が日々進化しつつある。",
+    "translation": "技术在日益进化。"
+  },
+  {
+    "grammar": "～お見えになる",
+    "sentence": "社長がお見えになりました。",
+    "translation": "社长到了。"
+  },
+  {
+    "grammar": "～お見えになる",
+    "sentence": "田中様は何時ごろお見えになりますか。",
+    "translation": "田中先生大概什么时候到？"
+  },
+  {
+    "grammar": "～お見えになる",
+    "sentence": "お客様がお見えになる前に準備してください。",
+    "translation": "客人到来前请准备好。"
+  },
+  {
+    "grammar": "～いただけますか",
+    "sentence": "この資料をご確認いただけますか。",
+    "translation": "能请您确认这份资料吗？"
+  },
+  {
+    "grammar": "～いただけますか",
+    "sentence": "少し時間をいただけますか。",
+    "translation": "能占用您一点时间吗？"
+  },
+  {
+    "grammar": "～いただけますか",
+    "sentence": "こちらでお待ちいただけますか。",
+    "translation": "能请您在这边等一下吗？"
+  },
+  {
+    "grammar": "～申し上げる",
+    "sentence": "ご協力いただき、厚くお礼申し上げます。",
+    "translation": "衷心感谢您的协助。"
+  },
+  {
+    "grammar": "～申し上げる",
+    "sentence": "心よりお祝い申し上げます。",
+    "translation": "谨致衷心的祝贺。"
+  },
+  {
+    "grammar": "～申し上げる",
+    "sentence": "ご迷惑をおかけして申し訳なく存じ上げますとお詫び申し上げます。",
+    "translation": "给您添麻烦，深表歉意。"
+  },
+  {
+    "grammar": "～ていただければと思います",
+    "sentence": "ご確認いただければと思います。",
+    "translation": "希望您能确认一下。"
+  },
+  {
+    "grammar": "～ていただければと思います",
+    "sentence": "資料を共有していただければと思います。",
+    "translation": "希望您能共享资料。"
+  },
+  {
+    "grammar": "～ていただければと思います",
+    "sentence": "明日までに返信いただければと思います。",
+    "translation": "希望您能在明天前回复。"
+  },
+  {
+    "grammar": "～ましては",
+    "sentence": "子どもでさえ難しいのに、大人にましてはもっと理解しにくい。",
+    "translation": "连孩子都觉得难，大人就更难理解了。"
+  },
+  {
+    "grammar": "～ましては",
+    "sentence": "平日でさえ混むのに、休日にましてはもっと混む。",
+    "translation": "平日都拥挤，假日就更不用说。"
+  },
+  {
+    "grammar": "～ましては",
+    "sentence": "新人が大変なのは当然で、リーダーにましては責任が重い。",
+    "translation": "新人辛苦是当然，领导更是责任重大。"
+  },
+  {
+    "grammar": "～なんて",
+    "sentence": "彼が辞めるなんて思わなかった。",
+    "translation": "没想到他会辞职。"
+  },
+  {
+    "grammar": "～なんて",
+    "sentence": "こんなに簡単だなんて驚いた。",
+    "translation": "没想到这么简单，真吃惊。"
+  },
+  {
+    "grammar": "～なんて",
+    "sentence": "私なんてまだまだ未熟だ。",
+    "translation": "我之类的还很不成熟。"
+  },
+  {
+    "grammar": "～たら",
+    "sentence": "雨が降ったら試合を中止します。",
+    "translation": "如果下雨比赛就取消。"
+  },
+  {
+    "grammar": "～たら",
+    "sentence": "仕事が終わったら連絡して。",
+    "translation": "工作结束后联系我。"
+  },
+  {
+    "grammar": "～たら",
+    "sentence": "暇になったら遊びに来てね。",
+    "translation": "有空就来玩。"
+  },
+  {
+    "grammar": "～ってば",
+    "sentence": "もう遅いってば、早く寝なさい。",
+    "translation": "都说晚了，快去睡觉。"
+  },
+  {
+    "grammar": "～ってば",
+    "sentence": "聞いてるってば、そんなに怒らないで。",
+    "translation": "我听到了啦，别那么生气。"
+  },
+  {
+    "grammar": "～ってば",
+    "sentence": "危ないってば、そっちに行かないで。",
+    "translation": "都说危险了，不要去那边。"
+  },
+  {
+    "grammar": "～ようになっている",
+    "sentence": "このドアは自動で閉まるようになっている。",
+    "translation": "这扇门设计成自动关。"
+  },
+  {
+    "grammar": "～ようになっている",
+    "sentence": "設定すれば毎日同じ時間に起きるようになっている。",
+    "translation": "设定后每天同一时间自动起床。"
+  },
+  {
+    "grammar": "～ようになっている",
+    "sentence": "パスワードを入れないと開かないようになっている。",
+    "translation": "不输入密码就打不开。"
+  },
+  {
+    "grammar": "～わけだ",
+    "sentence": "彼は毎日練習しているから強いわけだ。",
+    "translation": "他每天练习，难怪强。"
+  },
+  {
+    "grammar": "～わけだ",
+    "sentence": "電車が遅れたのか、混んでいるわけだ。",
+    "translation": "原来电车晚点，难怪这么挤。"
+  },
+  {
+    "grammar": "～わけだ",
+    "sentence": "説明を聞けば分かるわけだ。",
+    "translation": "听了说明就明白了。"
+  },
+  {
+    "grammar": "～どころか",
+    "sentence": "忙しくて休むどころか、残業ばかりだ。",
+    "translation": "忙得别说休息，还一直加班。"
+  },
+  {
+    "grammar": "～どころか",
+    "sentence": "雨どころか雪まで降ってきた。",
+    "translation": "别说下雨，连雪都下了。"
+  },
+  {
+    "grammar": "～どころか",
+    "sentence": "手伝うどころか邪魔している。",
+    "translation": "别说帮忙，反而添乱。"
+  },
+  {
+    "grammar": "～ようじゃ",
+    "sentence": "そんな態度のようじゃ合格は難しい。",
+    "translation": "这种态度恐怕难合格。"
+  },
+  {
+    "grammar": "～ようじゃ",
+    "sentence": "まだ覚えられないようじゃ練習が足りない。",
+    "translation": "还记不住的话说明练习不够。"
+  },
+  {
+    "grammar": "～ようじゃ",
+    "sentence": "準備ができないようじゃ間に合わない。",
+    "translation": "如果准备不了就赶不上。"
+  },
+  {
+    "grammar": "～しょうがない",
+    "sentence": "雨で外出できなくて退屈でしょうがない。",
+    "translation": "下雨出不去，无聊得不行。"
+  },
+  {
+    "grammar": "～しょうがない",
+    "sentence": "子どもが心配でしょうがない。",
+    "translation": "非常担心孩子。"
+  },
+  {
+    "grammar": "～しょうがない",
+    "sentence": "眠くてしょうがない。",
+    "translation": "困得不行。"
+  },
+  {
+    "grammar": "～に限って",
+    "sentence": "忙しい日に限って電話が多い。",
+    "translation": "偏偏在忙的时候电话多。"
+  },
+  {
+    "grammar": "～に限って",
+    "sentence": "急いでいるときに限って電車が遅れる。",
+    "translation": "偏偏着急时电车晚点。"
+  },
+  {
+    "grammar": "～に限って",
+    "sentence": "その人に限って遅刻することはない。",
+    "translation": "唯独那个人不会迟到。"
+  },
+  {
+    "grammar": "～というわけだ",
+    "sentence": "彼は海外にいる、だから来られないというわけだ。",
+    "translation": "他在海外，所以来不了。"
+  },
+  {
+    "grammar": "～というわけだ",
+    "sentence": "雨で中止、だから静かというわけだ。",
+    "translation": "因雨取消，所以才安静。"
+  },
+  {
+    "grammar": "～というわけだ",
+    "sentence": "準備は終わった、いつでも始められるというわけだ。",
+    "translation": "准备完毕，也就是随时能开始。"
+  },
+  {
+    "grammar": "～ところだった",
+    "sentence": "あと少しで遅刻するところだった。",
+    "translation": "差点就迟到了。"
+  },
+  {
+    "grammar": "～ところだった",
+    "sentence": "車にぶつかるところだった。",
+    "translation": "差点被车撞。"
+  },
+  {
+    "grammar": "～ところだった",
+    "sentence": "忘れるところだったが、友達に思い出させてもらった。",
+    "translation": "差点忘了，被朋友提醒了。"
+  },
+  {
+    "grammar": "～くらいなら",
+    "sentence": "待たされるくらいなら帰る。",
+    "translation": "要等的话还不如回去。"
+  },
+  {
+    "grammar": "～くらいなら",
+    "sentence": "嫌われるくらいなら何も言わない。",
+    "translation": "如果会被讨厌还不如什么都不说。"
+  },
+  {
+    "grammar": "～くらいなら",
+    "sentence": "高いお金を払うくらいなら自分で作る。",
+    "translation": "要花高价不如自己做。"
+  },
+  {
+    "grammar": "～ものがある",
+    "sentence": "彼の演技には光るものがある。",
+    "translation": "他的演技有闪光点。"
+  },
+  {
+    "grammar": "～ものがある",
+    "sentence": "この作品には心に響くものがある。",
+    "translation": "这部作品有打动人心的地方。"
+  },
+  {
+    "grammar": "～ものがある",
+    "sentence": "彼の言葉には説得力のあるものがある。",
+    "translation": "他的话里有说服力。"
+  },
+  {
+    "grammar": "～まい",
+    "sentence": "もう二度と同じ失敗をするまい。",
+    "translation": "再也不犯同样的错。"
+  },
+  {
+    "grammar": "～まい",
+    "sentence": "行くまいと思ったが、結局行った。",
+    "translation": "本想不去，但最终去了。"
+  },
+  {
+    "grammar": "～まい",
+    "sentence": "泣くまいと我慢した。",
+    "translation": "忍着不哭。"
+  },
+  {
+    "grammar": "～につけ",
+    "sentence": "雨につけ雪につけ、彼は走りに行く。",
+    "translation": "无论下雨下雪他都去跑步。"
+  },
+  {
+    "grammar": "～につけ",
+    "sentence": "何かにつけ彼女を思い出す。",
+    "translation": "一遇到什么事就想起她。"
+  },
+  {
+    "grammar": "～につけ",
+    "sentence": "嬉しいにつけ悲しいにつけ、家族に連絡する。",
+    "translation": "无论高兴还是悲伤都会联系家人。"
+  },
+  {
+    "grammar": "～からこそ",
+    "sentence": "努力したからこそ成功した。",
+    "translation": "正因为努力才成功。"
+  },
+  {
+    "grammar": "～からこそ",
+    "sentence": "信頼しているからこそ厳しく言う。",
+    "translation": "正因为信任才严厉。"
+  },
+  {
+    "grammar": "～からこそ",
+    "sentence": "若いからこそ挑戦すべきだ。",
+    "translation": "正因为年轻才应挑战。"
+  },
+  {
+    "grammar": "～じゃないか",
+    "sentence": "一緒に行こうじゃないか。",
+    "translation": "一起去吧。"
+  },
+  {
+    "grammar": "～じゃないか",
+    "sentence": "もう終わったんじゃないか。",
+    "translation": "不是已经结束了吗？"
+  },
+  {
+    "grammar": "～じゃないか",
+    "sentence": "今日は寒いじゃないか。",
+    "translation": "今天很冷不是吗？"
+  },
+  {
+    "grammar": "～うちに",
+    "sentence": "暖かいうちに食べてください。",
+    "translation": "趁热吃。"
+  },
+  {
+    "grammar": "～うちに",
+    "sentence": "若いうちに海外に行きたい。",
+    "translation": "想趁年轻去国外。"
+  },
+  {
+    "grammar": "～うちに",
+    "sentence": "雨が降らないうちに帰ろう。",
+    "translation": "趁还没下雨回家吧。"
+  },
+  {
+    "grammar": "～と思う",
+    "sentence": "明日行こうと思う。",
+    "translation": "我想明天去。"
+  },
+  {
+    "grammar": "～と思う",
+    "sentence": "彼に連絡しようと思う。",
+    "translation": "我想联系他。"
+  },
+  {
+    "grammar": "～と思う",
+    "sentence": "もっと勉強したいと思う。",
+    "translation": "我想再多学习。"
+  },
+  {
+    "grammar": "～にほかならない",
+    "sentence": "成功の理由は努力にほかならない。",
+    "translation": "成功的原因正是努力。"
+  },
+  {
+    "grammar": "～にほかならない",
+    "sentence": "彼が選ばれたのは実力にほかならない。",
+    "translation": "他被选上正是因为实力。"
+  },
+  {
+    "grammar": "～にほかならない",
+    "sentence": "この事故は不注意の結果にほかならない。",
+    "translation": "这起事故就是疏忽的结果。"
+  },
+  {
+    "grammar": "～すぎなかった",
+    "sentence": "彼の言葉は冗談にすぎなかった。",
+    "translation": "他的话不过是玩笑。"
+  },
+  {
+    "grammar": "～すぎなかった",
+    "sentence": "その夢は昔の憧れにすぎなかった。",
+    "translation": "那个梦想不过是过去的憧憬。"
+  },
+  {
+    "grammar": "～すぎなかった",
+    "sentence": "噂は誤解にすぎなかった。",
+    "translation": "传闻不过是误解。"
+  },
+  {
+    "grammar": "～上で",
+    "sentence": "確認した上で返事してください。",
+    "translation": "确认之后再回复。"
+  },
+  {
+    "grammar": "～上で",
+    "sentence": "十分検討した上で決めます。",
+    "translation": "充分讨论后再决定。"
+  },
+  {
+    "grammar": "～上で",
+    "sentence": "使用上での注意点を説明します。",
+    "translation": "说明使用上的注意点。"
+  },
+  {
+    "grammar": "～といっても",
+    "sentence": "休みといっても一日だけだ。",
+    "translation": "虽说休假也只有一天。"
+  },
+  {
+    "grammar": "～といっても",
+    "sentence": "旅行といっても近くの温泉だ。",
+    "translation": "虽说旅行也只是去附近温泉。"
+  },
+  {
+    "grammar": "～といっても",
+    "sentence": "趣味といっても読書くらいだ。",
+    "translation": "虽说爱好也就只有读书。"
+  },
+  {
+    "grammar": "～に限る",
+    "sentence": "暑い日は冷たいビールに限る。",
+    "translation": "热天最好就是冰啤酒。"
+  },
+  {
+    "grammar": "～に限る",
+    "sentence": "風邪を引いたら早く寝るに限る。",
+    "translation": "感冒时最好早睡。"
+  },
+  {
+    "grammar": "～に限る",
+    "sentence": "ストレス解消には運動に限る。",
+    "translation": "解压最好就是运动。"
+  },
+  {
+    "grammar": "～ばかりだ",
+    "sentence": "仕事が増えるばかりだ。",
+    "translation": "工作只增不减。"
+  },
+  {
+    "grammar": "～ばかりだ",
+    "sentence": "雨が強くなるばかりだ。",
+    "translation": "雨越下越大。"
+  },
+  {
+    "grammar": "～ばかりだ",
+    "sentence": "物価は上がるばかりだ。",
+    "translation": "物价不断上涨。"
+  },
+  {
+    "grammar": "～にしろ",
+    "sentence": "行くにしろ行かないにしろ早く決めて。",
+    "translation": "去不去都快点决定。"
+  },
+  {
+    "grammar": "～にしろ",
+    "sentence": "忙しいにしろ時間を作るべきだ。",
+    "translation": "即使忙也该挤出时间。"
+  },
+  {
+    "grammar": "～にしろ",
+    "sentence": "どこに住むにしろ家族と相談しよう。",
+    "translation": "住哪儿都要跟家人商量。"
+  },
+  {
+    "grammar": "～されると",
+    "sentence": "急に予定を変えられると困る。",
+    "translation": "计划被突然改就麻烦了。"
+  },
+  {
+    "grammar": "～されると",
+    "sentence": "大声で話されると集中できない。",
+    "translation": "别人大声说话我无法集中。"
+  },
+  {
+    "grammar": "～されると",
+    "sentence": "約束を破られると信頼がなくなる。",
+    "translation": "被违约就会失去信任。"
+  },
+  {
+    "grammar": "～にそって",
+    "sentence": "川にそって歩く。",
+    "translation": "沿着河走。"
+  },
+  {
+    "grammar": "～にそって",
+    "sentence": "計画にそって進めてください。",
+    "translation": "请按照计划推进。"
+  },
+  {
+    "grammar": "～にそって",
+    "sentence": "マニュアルにそって操作する。",
+    "translation": "按手册操作。"
+  },
+  {
+    "grammar": "～ないことには",
+    "sentence": "実際に見ないことには判断できない。",
+    "translation": "不亲眼看无法判断。"
+  },
+  {
+    "grammar": "～ないことには",
+    "sentence": "会ってみないことには分からない。",
+    "translation": "不见面就不知道。"
+  },
+  {
+    "grammar": "～ないことには",
+    "sentence": "やってみないことには成功しない。",
+    "translation": "不尝试就不会成功。"
+  },
+  {
+    "grammar": "～としたら",
+    "sentence": "もし雨だとしたら試合は中止だ。",
+    "translation": "如果下雨比赛就取消。"
+  },
+  {
+    "grammar": "～としたら",
+    "sentence": "彼が来ないとしたら誰が説明する？",
+    "translation": "如果他不来谁来说明？"
+  },
+  {
+    "grammar": "～としたら",
+    "sentence": "君が社長だとしたらどう決める？",
+    "translation": "如果你是社长会怎么定？"
+  },
+  {
+    "grammar": "～次第で",
+    "sentence": "結果は努力次第で変わる。",
+    "translation": "结果会因努力而变。"
+  },
+  {
+    "grammar": "～次第で",
+    "sentence": "給料は売上次第で増える。",
+    "translation": "工资会因销售额而增加。"
+  },
+  {
+    "grammar": "～次第で",
+    "sentence": "成否は準備次第で決まる。",
+    "translation": "成败取决于准备。"
+  },
+  {
+    "grammar": "～一方で",
+    "sentence": "仕事は忙しい一方で、やりがいもある。",
+    "translation": "工作忙但也有价值。"
+  },
+  {
+    "grammar": "～一方で",
+    "sentence": "都市は便利な一方で、自然が少ない。",
+    "translation": "城市方便但自然少。"
+  },
+  {
+    "grammar": "～一方で",
+    "sentence": "自由が増える一方で責任も増える。",
+    "translation": "自由增加的同时责任也增加。"
+  },
+  {
+    "grammar": "～ばかり",
+    "sentence": "甘いものばかり食べている。",
+    "translation": "净吃甜的。"
+  },
+  {
+    "grammar": "～ばかり",
+    "sentence": "文句ばかり言わないで。",
+    "translation": "别老是抱怨。"
+  },
+  {
+    "grammar": "～ばかり",
+    "sentence": "最近失敗ばかりだ。",
+    "translation": "最近尽是失败。"
+  },
+  {
+    "grammar": "～を先立って",
+    "sentence": "出発を先立って最終確認をする。",
+    "translation": "出发前先做最终确认。"
+  },
+  {
+    "grammar": "～を先立って",
+    "sentence": "開会に先立って挨拶があった。",
+    "translation": "开会前有致辞。"
+  },
+  {
+    "grammar": "～を先立って",
+    "sentence": "実験に先立って安全説明を行う。",
+    "translation": "实验前先进行安全说明。"
+  },
+  {
+    "grammar": "～にこたえて",
+    "sentence": "期待にこたえて優勝した。",
+    "translation": "不负众望拿了冠军。"
+  },
+  {
+    "grammar": "～にこたえて",
+    "sentence": "依頼にこたえて資料を送った。",
+    "translation": "回应请求发送了资料。"
+  },
+  {
+    "grammar": "～にこたえて",
+    "sentence": "声援にこたえて全力で走った。",
+    "translation": "响应加油，全力奔跑。"
+  },
+  {
+    "grammar": "～に沿った",
+    "sentence": "方針に沿った計画を立てる。",
+    "translation": "制定符合方针的计划。"
+  },
+  {
+    "grammar": "～に沿った",
+    "sentence": "ルールに沿った運営をする。",
+    "translation": "按规则运营。"
+  },
+  {
+    "grammar": "～に沿った",
+    "sentence": "テーマに沿った内容を準備した。",
+    "translation": "准备了符合主题的内容。"
+  },
+  {
+    "grammar": "～ことにする",
+    "sentence": "毎朝走ることにする。",
+    "translation": "决定每天早上跑步。"
+  },
+  {
+    "grammar": "～ことにする",
+    "sentence": "来月旅行に行くことにした。",
+    "translation": "决定下月去旅行。"
+  },
+  {
+    "grammar": "～ことにする",
+    "sentence": "今日は早く寝ることにする。",
+    "translation": "决定今天早点睡。"
+  },
+  {
+    "grammar": "～つもりだった",
+    "sentence": "伝えたつもりだったが、届いていなかった。",
+    "translation": "以为已经传达了，其实没到。"
+  },
+  {
+    "grammar": "～つもりだった",
+    "sentence": "静かにしたつもりだったけど、うるさかったらしい。",
+    "translation": "以为自己安静，似乎还是吵了。"
+  },
+  {
+    "grammar": "～つもりだった",
+    "sentence": "早く起きるつもりだったのに寝坊した。",
+    "translation": "本想早起却睡过头了。"
+  },
+  {
+    "grammar": "～ざるを得なかった",
+    "sentence": "事情が重なり延期せざるを得なかった。",
+    "translation": "事情叠加不得不延期。"
+  },
+  {
+    "grammar": "～ざるを得なかった",
+    "sentence": "彼に謝罪せざるを得なかった。",
+    "translation": "不得不向他道歉。"
+  },
+  {
+    "grammar": "～ざるを得なかった",
+    "sentence": "計画を変更せざるを得なかった。",
+    "translation": "不得不更改计划。"
+  },
+  {
+    "grammar": "～ものなら",
+    "sentence": "できるものならやってみたい。",
+    "translation": "如果能做到就想试试。"
+  },
+  {
+    "grammar": "～ものなら",
+    "sentence": "戻れるものなら昔に戻りたい。",
+    "translation": "如果能回去想回到过去。"
+  },
+  {
+    "grammar": "～ものなら",
+    "sentence": "助けられるものなら全力で助けたい。",
+    "translation": "如果能帮上忙想全力帮助。"
+  },
+  {
+    "grammar": "～か〜ないかのうちに",
+    "sentence": "ベルが鳴るか鳴らないかのうちに生徒が出て行った。",
+    "translation": "铃声刚响学生就出去了。"
+  },
+  {
+    "grammar": "～か〜ないかのうちに",
+    "sentence": "雨が降るか降らないかのうちに傘を開いた。",
+    "translation": "雨刚要下就撑开伞。"
+  },
+  {
+    "grammar": "～か〜ないかのうちに",
+    "sentence": "着席するかしないかのうちに会議が始まった。",
+    "translation": "刚坐下会议就开始了。"
+  },
+  {
+    "grammar": "～べきかどうか",
+    "sentence": "退職すべきかどうか迷っている。",
+    "translation": "在犹豫要不要辞职。"
+  },
+  {
+    "grammar": "～べきかどうか",
+    "sentence": "参加すべきかどうか検討する。",
+    "translation": "考虑是否应该参加。"
+  },
+  {
+    "grammar": "～べきかどうか",
+    "sentence": "話すべきかどうか分からない。",
+    "translation": "不知道该不该说。"
+  },
+  {
+    "grammar": "～あっても",
+    "sentence": "多少の失敗があっても挑戦し続ける。",
+    "translation": "即使有些失败也要持续挑战。"
+  },
+  {
+    "grammar": "～あっても",
+    "sentence": "意見の違いがあっても仲良くしたい。",
+    "translation": "即使意见不同也想和睦。"
+  },
+  {
+    "grammar": "～あっても",
+    "sentence": "困難があっても諦めない。",
+    "translation": "即便有困难也不放弃。"
+  },
+  {
+    "grammar": "～しかない",
+    "sentence": "この道を行くしかない。",
+    "translation": "只能走这条路。"
+  },
+  {
+    "grammar": "～しかない",
+    "sentence": "謝るしかない状況だ。",
+    "translation": "只能道歉了。"
+  },
+  {
+    "grammar": "～しかない",
+    "sentence": "電車が止まったので歩くしかない。",
+    "translation": "电车停了只能走路。"
+  },
+  {
+    "grammar": "～あまり",
+    "sentence": "緊張のあまり声が出なかった。",
+    "translation": "太紧张以至于说不出话。"
+  },
+  {
+    "grammar": "～あまり",
+    "sentence": "嬉しさのあまり泣いてしまった。",
+    "translation": "太高兴结果哭了。"
+  },
+  {
+    "grammar": "～あまり",
+    "sentence": "心配するあまり眠れなかった。",
+    "translation": "太担心而睡不着。"
+  },
+  {
+    "grammar": "～すら",
+    "sentence": "忙しくて昼ご飯すら食べられない。",
+    "translation": "忙得连午饭都吃不上。"
+  },
+  {
+    "grammar": "～すら",
+    "sentence": "基本的なことすら分からない。",
+    "translation": "连基本的事情都不懂。"
+  },
+  {
+    "grammar": "～すら",
+    "sentence": "名前すら知らない人に頼めない。",
+    "translation": "连名字都不知道的人无法依赖。"
+  },
+  {
+    "grammar": "～かねる",
+    "sentence": "それには賛成しかねる。",
+    "translation": "对此难以赞同。"
+  },
+  {
+    "grammar": "～かねる",
+    "sentence": "安全が確認できないので出発しかねます。",
+    "translation": "无法确认安全所以难以出发。"
+  },
+  {
+    "grammar": "～かねる",
+    "sentence": "個人情報はお答えしかねます。",
+    "translation": "个人信息不便回答。"
+  },
+  {
+    "grammar": "～ものだ",
+    "sentence": "若いころはよく徹夜したものだ。",
+    "translation": "年轻时经常通宵。"
+  },
+  {
+    "grammar": "～ものだ",
+    "sentence": "約束は守るものだ。",
+    "translation": "约定是要遵守的。"
+  },
+  {
+    "grammar": "～ものだ",
+    "sentence": "子どもはよく遊ぶものだ。",
+    "translation": "孩子本来就喜欢玩。"
+  },
+  {
+    "grammar": "～ことになる",
+    "sentence": "来月転勤することになった。",
+    "translation": "决定下个月调动工作。"
+  },
+  {
+    "grammar": "～ことになる",
+    "sentence": "雨なら中止ということになる。",
+    "translation": "如果下雨就算取消。"
+  },
+  {
+    "grammar": "～ことになる",
+    "sentence": "失敗すれば計画を見直すことになる。",
+    "translation": "失败的话就得重新审视计划。"
+  },
+  {
+    "grammar": "～に加えて",
+    "sentence": "雨に加えて風も強い。",
+    "translation": "除了下雨风也大。"
+  },
+  {
+    "grammar": "～に加えて",
+    "sentence": "経験に加えて資格も必要だ。",
+    "translation": "除了经验还需要资格。"
+  },
+  {
+    "grammar": "～に加えて",
+    "sentence": "家事に加えて仕事もこなしている。",
+    "translation": "除了家务还要工作。"
+  },
+  {
+    "grammar": "～されたとしても",
+    "sentence": "断られたとしてもまた挑戦する。",
+    "translation": "即使被拒也会再挑战。"
+  },
+  {
+    "grammar": "～されたとしても",
+    "sentence": "批判されたとしても信念は変わらない。",
+    "translation": "即使被批判信念不变。"
+  },
+  {
+    "grammar": "～されたとしても",
+    "sentence": "失敗したとしても経験になる。",
+    "translation": "即使失败也会成为经验。"
+  },
+  {
+    "grammar": "～にして",
+    "sentence": "50歳にして新しい仕事を始めた。",
+    "translation": "五十岁才开始新工作。"
+  },
+  {
+    "grammar": "～にして",
+    "sentence": "一度にして成功した。",
+    "translation": "仅一次就成功了。"
+  },
+  {
+    "grammar": "～にして",
+    "sentence": "彼にして初めて解けた問題だ。",
+    "translation": "只有他才能解出的题。"
+  },
+
+];
+
+    // --- End of 语法数据 ---
+
+    let currentQuestion = null;
+
+    let currentQuestionIndex = 0;
+
+    let questionHistory = [];
+
+    let hasChecked = false;
+
+    let isCurrentCorrect = false;
+
+    let wrongSet = new Set();
+
+    let mode = 'all'; // 'all' | 'wrong'
+
+    let wrongPointer = 0;
+
+    let autoNextTimer = null;
+
+    const totalQuestions = grammarData.length;
+
+    function loadProgress() {
+
+        try {
+
+            const saved = parseInt(localStorage.getItem('try_n3_progress_index'), 10);
+
+            if (!isNaN(saved) && saved >= 0 && saved < totalQuestions) {
+
+                currentQuestionIndex = saved; // zero-based pointer
+
+            }
+
+            const wrongRaw = localStorage.getItem('try_n3_wrong_indices');
+
+            if (wrongRaw) {
+
+                const arr = JSON.parse(wrongRaw);
+
+                if (Array.isArray(arr)) wrongSet = new Set(arr);
+
+            }
+
+            const savedMode = localStorage.getItem('try_n3_mode');
+
+            if (savedMode === 'wrong' || savedMode === 'all') {
+
+                mode = savedMode;
+
+            }
+
+            const savedWrongPtr = parseInt(localStorage.getItem('try_n3_wrong_ptr'), 10);
+
+            if (!isNaN(savedWrongPtr)) wrongPointer = savedWrongPtr;
+
+        } catch (e) {
+
+            console.warn('progress load failed', e);
+
+        }
+
+    }
+
+    function saveProgress() {
+
+        try {
+
+            localStorage.setItem('try_n3_progress_index', String(currentQuestionIndex));
+
+            localStorage.setItem('try_n3_wrong_indices', JSON.stringify(Array.from(wrongSet)));
+
+            localStorage.setItem('try_n3_mode', mode);
+
+            localStorage.setItem('try_n3_wrong_ptr', String(wrongPointer));
+
+        } catch (e) {
+
+            console.warn('progress save failed', e);
+
+        }
+
+    }
+
+    function updateProgressUI() {
+
+        if (mode === 'wrong') {
+            const size = wrongSet.size;
+            const done = size > 0 ? Math.min(wrongPointer + 1, size) : 0;
+            const pct = size > 0 ? (done / size) * 100 : 0;
+            if (progressLabel) progressLabel.textContent = `${done}/${size}`;
+            if (progressBar) progressBar.style.width = `${pct}%`;
+            return;
+        }
+
+        const done = Math.min(currentQuestionIndex, totalQuestions);
+        const pct = totalQuestions > 0 ? (done / totalQuestions) * 100 : 0;
+        if (progressLabel) progressLabel.textContent = `${done}/${totalQuestions}`;
+        if (progressBar) progressBar.style.width = `${pct}%`;
+
+    }
+
+    function updateModeUI() {
+
+        if (wrongCountDisplay) wrongCountDisplay.textContent = wrongSet.size;
+
+        if (modeLabel) modeLabel.textContent = mode === 'wrong' ? '错题模式' : '全题模式';
+
+    }
+
+    function getWrongList() {
+
+        return Array.from(wrongSet);
+
+    }
+
+    function pickQuestionIndex(advance = true) {
+        if (mode === 'wrong') {
+            const wrongList = Array.from(wrongSet);
+            if (wrongList.length === 0) {
+                alert('错题本为空，自动返回全题模式');
+                mode = 'all';
+                wrongPointer = 0;
+                saveProgress();
+                updateModeUI();
+                return pickQuestionIndex(advance);
+            }
+            if (wrongPointer >= wrongList.length) wrongPointer = 0;
+            if (advance) wrongPointer = (wrongPointer + 1) % wrongList.length;
+            currentQuestionIndex = wrongList[wrongPointer];
+            return;
+        }
+
+        if (advance) {
+            currentQuestionIndex = (currentQuestionIndex + 1) % grammarData.length;
+        }
+    }
+
+    // Strip end-of-sentence punctuation so it never becomes a sortable chip
+
+    function stripEndingPunctuation(sentence) {
+
+        // Remove common full/half width sentence-ending marks: 。 ． ｡ . ? !
+
+        return sentence.replace(/[\s\u3002\uFF0E\uFF61\.\?\!]+$/, '').trim();
+
+    }
+
+    // --- Speech (Web Speech API) ---
+
+    let preferredVoice = null;
+
+    function pickVoice() {
+
+        if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+
+        const voices = window.speechSynthesis.getVoices() || [];
+
+        const ja = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
+
+        const zh = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+
+        return ja || zh || voices[0] || null;
+
+    }
+
+    function speakText(text) {
+
+        if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+
+            console.warn('speech synthesis not supported');
+
+            return;
+
+        }
+
+        if (!preferredVoice) preferredVoice = pickVoice();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        utterance.lang = (preferredVoice && preferredVoice.lang) || 'ja-JP';
+
+        utterance.rate = 1;
+
+        utterance.pitch = 1;
+
+        window.speechSynthesis.cancel();
+
+        window.speechSynthesis.speak(utterance);
+
+    }
+
+    window.speechSynthesis && (window.speechSynthesis.onvoiceschanged = () => {
+
+        preferredVoice = pickVoice();
+
+    });
+
+    function attachSpeechToChip(chip) {
+
+        // 双击发音（桌面）
+
+        chip.addEventListener('dblclick', (e) => {
+
+            e.stopPropagation();
+
+            const text = chip.textContent.trim();
+
+            if (text) speakText(text);
+
+        });
+
+        // 长按发音（移动端友好）
+
+        let pressTimer = null;
+
+        const startHold = () => {
+
+            if (pressTimer) clearTimeout(pressTimer);
+
+            pressTimer = setTimeout(() => {
+
+                const text = chip.textContent.trim();
+
+                if (text) speakText(text);
+
+            }, 500); // 长按 500ms 触发
+
+        };
+
+        const cancelHold = () => {
+
+            if (pressTimer) {
+
+                clearTimeout(pressTimer);
+
+                pressTimer = null;
+
+            }
+
+        };
+
+        chip.addEventListener('touchstart', startHold, { passive: true });
+
+        chip.addEventListener('touchend', cancelHold);
+
+        chip.addEventListener('touchcancel', cancelHold);
+
+        chip.addEventListener('mousedown', startHold);
+
+        chip.addEventListener('mouseup', cancelHold);
+
+        chip.addEventListener('mouseleave', cancelHold);
+
+    }
+
+    // 作答区拖拽排序支持
+
+    let draggingIndex = null;
+
+    function enableAnswerDrag(chip) {
+
+        chip.draggable = true;
+
+        chip.addEventListener('dragstart', (e) => {
+
+            draggingIndex = Array.from(answerArea.children).indexOf(chip);
+
+            e.dataTransfer.effectAllowed = 'move';
+
+        });
+
+    }
+
+    function disableAnswerDrag(chip) {
+
+        chip.draggable = false;
+
+        draggingIndex = null;
+
+    }
+
+    const shuffledArea = document.getElementById('shuffled-sentence');
+
+    const answerArea = document.getElementById('answer-area');
+
+    const grammarDisplay = document.getElementById('current-grammar');
+
+    const translationHint = document.getElementById('translation-hint');
+
+    const questionNumberDisplay = document.getElementById('question-number');
+
+    const wrongCountDisplay = document.getElementById('wrong-count');
+
+    const modeLabel = document.getElementById('mode-label');
+
+    const wrongModeButton = document.getElementById('wrong-mode-button');
+
+    const allModeButton = document.getElementById('all-mode-button');
+
+    const resultArea = document.getElementById('result-area');
+
+    const resultMessage = document.getElementById('result-message');
+
+    const correctJapanese = document.getElementById('correct-japanese');
+
+    const correctChinese = document.getElementById('correct-chinese');
+
+    const checkButton = document.getElementById('check-button');
+
+    const nextButton = document.getElementById('next-button');
+
+    const resetButton = document.getElementById('reset-button');
+
+    const progressResetButton = document.getElementById('progress-reset-button');
+
+    answerArea.addEventListener('dragover', (e) => {
+
+        e.preventDefault();
+
+        e.dataTransfer.dropEffect = 'move';
+
+    });
+
+    answerArea.addEventListener('drop', (e) => {
+
+        e.preventDefault();
+
+        if (draggingIndex === null) return;
+
+        const chips = Array.from(answerArea.children);
+
+        const targetChip = e.target.closest('.answer-chip');
+
+        let targetIndex = chips.indexOf(targetChip);
+
+        if (targetIndex === -1) targetIndex = chips.length - 1;
+
+        const movingChip = chips[draggingIndex];
+
+        if (!movingChip) return;
+
+        if (draggingIndex < targetIndex) {
+
+            targetChip ? targetChip.after(movingChip) : answerArea.appendChild(movingChip);
+
+        } else if (draggingIndex > targetIndex) {
+
+            targetChip ? answerArea.insertBefore(movingChip, targetChip) : answerArea.appendChild(movingChip);
+
+        }
+
+        draggingIndex = null;
+
+    });
+
+    const progressBar = document.getElementById('progress-bar');
+
+    const progressLabel = document.getElementById('progress-label');
+
+    const readingToggle = document.getElementById('reading-toggle');
+    const readingStorageKey = 'n3-reading-enabled';
+    let enableReading = true;
+
+    function loadReadingSetting() {
+        try {
+            const saved = localStorage.getItem(readingStorageKey);
+            if (saved !== null) enableReading = saved === 'true';
+        } catch (e) {}
+        if (readingToggle) readingToggle.checked = enableReading;
+    }
+
+    function saveReadingSetting() {
+        try { localStorage.setItem(readingStorageKey, enableReading); } catch (e) {}
+    }
+
+    if (readingToggle) {
+        readingToggle.addEventListener('change', () => {
+            enableReading = readingToggle.checked;
+            saveReadingSetting();
+        });
+    }
+
+    // --- Mini fireworks feedback ---
+    const fireworksCanvas = document.getElementById('mini-fireworks');
+    const fireworksOverlay = document.getElementById('fireworks-overlay');
+    const fwCtx = fireworksCanvas ? fireworksCanvas.getContext('2d') : null;
+    let fwParticles = [];
+    let fwRunning = false;
+    let fwCallbackTimer = null;
+    const fwSound = (() => {
+        const audioSrc = 'data:audio/mpeg;base64,SUQzBAAAAAEDP1REUkMAAAASAAADMjAxOC0wMS0wMyAwOTo1NABQUklWAAECcgAAWE1QADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM3IDc5LjE1OTc2OCwgMjAxNi8wOC8xMS0xMzoyNDo0MiAgICAgICAgIj4KIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIgogICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICAgeG1sbnM6YmV4dD0iaHR0cDovL25zLmFkb2JlLmNvbS9id2YvYmV4dC8xLjAvIgogICAgeG1sbnM6Y3JlYXRvckF0b209Imh0dHA6Ly9ucy5hZG9iZS5jb20vY3JlYXRvckF0b20vMS4wLyIKICAgIHhtbG5zOnhtcERNPSJodHRwOi8vbnMuYWRvYmUuY29tL3htcC8xLjAvRHluYW1pY01lZGlhLyIKICAgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICB4bXA6Q3JlYXRlRGF0ZT0iMjAxOC0wMS0wM1QwOTo1NDoyNSswODowMCIKICAgeG1wOk1ldGFkYXRhRGF0ZT0iMjAxOC0wMS0wM1QxMTo1NDo1NCswODowMCIKICAgeG1wOk1vZGlmeURhdGU9IjIwMTgtMDEtMDNUMTE6NTQ6NTQrMDg6MDAiCiAgIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6YmRjYzM1ZDUtYjAwZC1hYjRiLWJlMzEtMzUwNjQ3NDllMDRkIgogICB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOmJkY2MzNWQ1LWIwMGQtYWI0Yi1iZTMxLTM1MDY0NzQ5ZTA0ZCIKICAgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjg2NDAwZjUxLTI3ZjQtYmU0Yi1iZDFhLWE1ZjE4ZjkwZDNhYyIKICAgZGM6Zm9ybWF0PSJhdWRpby9tcGVnIgogICBiZXh0Om9yaWdpbmF0aW9uRGF0ZT0iMjAxOC0wMS0wMyIKICAgYmV4dDpvcmlnaW5hdGlvblRpbWU9IjExOjU0OjU0IgogICBiZXh0OnRpbWVSZWZlcmVuY2U9IjIyNTU2MDkiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo4NjQwMGY1MS0yN2Y0LWJlNGItYmQxYS1hNWYxOGY5MGQzYWMiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMDk6NTQ6MjYrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo5NGMxZGYyOS0xNmNkLWQxNGMtOGE2ZC1lN2RhZGY5NjU1NzAiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMDk6NTQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDoxOWI4Zjk0ZS05Y2MxLTA5NGMtYTc5Yy01NjM3YTZlMzRiZWEiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMDk6NTQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MDJlNGNlMzAtOTUxMi0zZTQwLWJmY2YtZGZlNTg5ODliOTUwIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDA5OjU0OjI4KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MDUyMzIxZDAtOWY5ZS03NDQ4LWIwZmQtODhiYTk0OWUzNWViIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDA5OjU0OjI4KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjU3Y2E1NWZmLTkxNmUtY2U0Ni1iNzM5LWViZGZhMTA0ZDhmYyIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDowMDoyOSswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iL21ldGFkYXRhIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjhlZjVmOTk4LWVlNjgtM2Q0Yi1hZWFlLWQzYjBkZGQxMWI5NCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDowMDoyOSswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDoxZjVmMDgyYS03NDlhLWI5NDEtYWJkOC1kMDIyNDk1MmQ2ODYiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MDQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo2OTYxOTgzYi02NWYwLWJlNDMtOTAyMy00OTNhOGY0YTY5YTciCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MDQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MzUyZDM3YjEtODAzZC0xMjRlLTkyM2UtMTgyNjllNmVmOGIyIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjA2OjM5KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6OTVmYTIxZjktYzlkNS1iYTQwLTg5NTQtODc5ODcyMTBlNjFjIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjA2OjM5KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjFhZjJjYjM3LTUxZjgtODA0Mi1iYTQ5LWE4YmM2NDc3YjI0YiIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDowOTozOSswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iL21ldGFkYXRhIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjJjYzJiNTZiLTg5NDctM2E0NS1iYjdkLWRlMzQ0YWFiODY0YyIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDowOTozOSswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo5Y2NjZDQ4MC01NWU2LWZmNDAtOTU5My01ZWYzNDJkNWQ4YzUiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MTQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpiMTBmZDk4Ni1hNDMwLWMxNDktODFiMC1jNTE1MWMwMjYwMzMiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MTQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YWIzOTY3Y2EtZjdjZS02YjRhLWFlOGItNDEzYmM4MGIzMmM5IgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjE0OjU2KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MmJhZTY2ZDAtMGRkZi1jMjRhLWFkNDctNGIwMDJjOTFmNmFlIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjE0OjU2KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjRkNjE2ZTY2LTY2ODYtN2E0NC05ODdkLTNkZTM0NjU2NDQ1OCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDoxNzo1NyswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iL21ldGFkYXRhIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjBkM2I2NDFlLTBiZDAtOGE0YS05N2EwLWVhNTYzYjJkMzU5OCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDoxNzo1NyswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpiMDhjMmUzNy1mYTM1LTk5NDAtODg3YS1kYjUwMDk3ODM5NmUiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MjI6MjMrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDozYzUxNTQxYi04ZDQ1LTg3NGQtODBlNi1jOTJjMmU5MjM0YzUiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MjI6MjMrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NmJiMzY5ZDItNjQzNC1kOTRjLTk3MjItZmMwYmE2MmRhYTQwIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjI0OjI4KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MTA2MDk2ZDgtZTE3OC05YzQwLTg0MjMtOWI4OWIwYjYzZDAzIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjI0OjI4KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjljM2U3Y2NmLTI2OTQtNTM0Yi05Mjc5LWY4MjE3OWE4OGZjMCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDoyODoyMyswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iL21ldGFkYXRhIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmI4OTEyNDc4LWFhZGYtYTQ0Ny1iZWMxLWI1YzM5ODJiNjkyZCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDoyODoyMyswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDoyM2Q2NTYxYy0xYmIzLWFjNDQtYWY0OC05MzE2ZTYxMzRkYmIiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MzM6MTgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDphNmIyYTIxNC1jNTIyLTAyNDMtODk0Ny1lMWVlMjQyYTRmOTUiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MzM6MTgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YWQxZTM5M2QtMWYzNi1hYTQ0LTliZDAtYWQ5MzZlZTk5MDEzIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjM0OjI4KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MmZkYTg0YzgtNTJjOC01ZjRiLTgzNGUtMDJlNDc2MmJlNWVhIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjM0OjI4KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjFlYjMxMThmLWVmZWEtODc0Yi05ODM4LWFjNDBkNzRiNjEyZCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDozOToxOSswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iL21ldGFkYXRhIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjFkZDRmZjkxLWQ2NzItYzE0Yy04MDM4LTVjNWNjMTQxNmI2OCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDozOToxOSswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo0ODUzZDRiMS1mOWQzLWExNGMtYjA4Yi1kODgwMjNhMTE0OGEiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6NDc6MTMrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDozM2Q5N2U2NC03NGMwLWRhNDUtYWVmOS1kZDcxMDRhNTg4MzkiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6NDc6MTMrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MzgzMTFiYjEtYjc4ZC03ZDRjLWFiZjMtMDk2MDk4MzY5ZjE1IgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjUwOjEzKzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YTVmMzFlOTMtYmM2Ny03YjRhLTk1N2MtMjBjOTZmN2M1MjA4IgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjUwOjEzKzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjU1OGEyM2Y2LTBlN2MtMzU0MC1iYjNjLTM1OWZkNjMyZTNjZSIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDo1NDoyOCswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iL21ldGFkYXRhIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjc5NGYzMzcxLTE5MDYtYWI0YS1iMDFkLTAwMTA5MmY3MGMzYyIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMDo1NDoyOCswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo5Y2NjZDQ4MC01NWU2LWZmNDAtOTU5My01ZWYzNDJkNWQ4YzUiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MTQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpiMTBmZDk4Ni1hNDMwLWMxNDktODFiMC1jNTE1MWMwMjYwMzMiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTA6MTQ6MjgrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YWIzOTY3Y2EtZjdjZS02YjRhLWFlOGItNDEzYmM4MGIzMmM5IgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjE0OjU2KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MmJhZTY2ZDAtMGRkZi1jMjRhLWFkNDctNGIwMDJjOTFmNmFlIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDEwOjE0OjU2KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjY3OGUwYWI3LTE2MTQtNjA0NC04YTNkLWU4NzdkNjI1NTU4NCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMTowMTozNCswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iL21ldGFkYXRhIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249InNhdmVkIgogICAgICBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjJhZGQzMjgyLTQ2MTEtNTg0OC04NTYzLTAyYmQ2MTRkNGIwOCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMTowMTozNCswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpiY2QwYzhkYy02ZmEwLTk0NDctYmVjOS1hMThlZWJlY2M3NDgiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTE6NTM6MTYrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii9tZXRhZGF0YSIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpjNmRlN2Y3MC0yODg0LTU1NDAtYjYxYS05ZjI0ZjQxMjBkNDgiCiAgICAgIHN0RXZ0OndoZW49IjIwMTgtMDEtMDNUMTE6NTM6MTYrMDg6MDAiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIEF1ZGl0aW9uIENDIDIwMTcuMCAoV2luZG93cykiCiAgICAgIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6ZWM0ZDNiOTYtM2U2Ny1hNTRiLWEzMWQtYjY2M2ZiYzE4MWI0IgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDExOjU0OjU0KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6N2JlYTk1YzQtNTdhZi0wZDRlLTgzMGYtMzVhMzhjZThkZmU0IgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDExOjU0OjU0KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvbWV0YWRhdGEiLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIgogICAgICBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGFwcGxpY2F0aW9uL3htbCB0byBhdWRpby9tcGVnIi8+CiAgICAgPHJkZjpsaQogICAgICBzdEV2dDphY3Rpb249ImNvbnZlcnRlZCIKICAgICAgeG1wRE06cGFyYW1ldGVycz0iZnJvbSBhcHBsaWNhdGlvbi94bWwgdG8gYXVkaW8vbXBlZyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpiZGMzNWQ1LWIwMGQtYWI0Yi1iZTMxLTM1MDY0NzQ5ZTA0ZCIKICAgICAgc3RFdnQ6d2hlbj0iMjAxOC0wMS0wM1QxMTo1NDo1NCswODowMCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgQXVkaXRpb24gQ0MgMjAxNy4wIChXaW5kb3dzKSIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIvPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJjb252ZXJ0ZWQiCiAgICAgIHN0RXZ0OnBhcmFtZXRlcnM9ImZyb20gYXBwbGljYXRpb24veG1sIHRvIGF1ZGlvL21wZWciLz4KICAgICA8cmRmOmxpCiAgICAgIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiCiAgICAgIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YmRjYzM1ZDUtYjAwZC1hYjRiLWJlMzEtMzUwNjQ3NDllMDRkIgogICAgICBzdEV2dDp3aGVuPSIyMDE4LTAxLTAzVDExOjU0OjU0KzA4OjAwIgogICAgICBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBBdWRpdGlvbiBDQyAyMDE3LjAgKFdpbmRvd3MpIgogICAgICBzdEV2dDpjaGFuZ2VkPSIvIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICAgPHhtcE1NOkRlcml2ZWRGcm9tCiAgICBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOmJjNjQ0ZTI5LTE3MTgtYWI0MS05ZWU1LWIxMmQ1YTg0MDVhNyIKICAgIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6YmM2NDRlMjktMTcxOC1hYjQxLTllZTUtYjEyZDVhODQwNWE3IgogICAgc3RSZWY6b3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjg2NDAwZjUxLTI3ZjQtYmU0Yi1iZDFhLWE1ZjE4ZjkwZDNhYyIvPgogICA8Y3JlYXRvckF0b206d2luZG93c0F0b20KICAgIGNyZWF0b3JBdG9tOmV4dGVuc2lvbj0iLnNlc3giCiAgICBjcmVhdG9yQXRvbTppbnZvY2F0aW9uRmxhZ3M9Ii1FTyIKICAgIGNyZWF0b3JBdG9tOnVuY1Byb2plY3RQYXRoPSJEOlxhdei9r+S7tlzpobnnm65c5pyq5ZG95ZCN5re36Z+z6aG555uuIDFc5pyq5ZG95ZCN5re36Z+z6aG555uuIDEuc2VzeCIvPgogICA8Y3JlYXRvckF0b206bWFjQXRvbQogICAgY3JlYXRvckF0b206YXBwbGljYXRpb25Db2RlPSIxMDk3MDg5Mzk3IgogICAgY3JlYXRvckF0b206aW52b2NhdGlvbkFwcGxlRXZlbnQ9IjExNjQyMDE4NDIiLz4KICAgPHhtcERNOlRyYWNrcz4KICAgIDxyZGY6QmFnPgogICAgIDxyZGY6bGkKICAgICAgeG1wRE06dHJhY2tOYW1lPSJDdWVQb2ludCBNYXJrZXJzIgogICAgICB4bXBETTp0cmFja1R5cGU9IkN1ZSIKICAgICAgeG1wRE06ZnJhbWVSYXRlPSJmNDgwMDAiLz4KICAgICA8cmRmOmxpCiAgICAgIHhtcERNOnRyYWNrTmFtZT0iQ0QgVHJhY2sgTWFya2VycyIKICAgICAgeG1wRE06dHJhY2tUeXBlPSJUcmFjayIKICAgICAgeG1wRE06ZnJhbWVSYXRlPSJmNDgwMDAiLz4KICAgICA8cmRmOmxpCiAgICAgIHhtcERNOnRyYWNrTmFtZT0iU3ViY2xpcCBNYXJrZXJzIgogICAgICB4bXBETTp0cmFja1R5cGU9IkluT3V0IgogICAgICB4bXBETTpmcmFtZVJhdGU9ImY0ODAwMCIvPgogICAgPC9yZGY6QmFnPgogICA8L3htcERNOlRyYWNrcz4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg…'; 
+        const audio = new Audio(audioSrc);
+        audio.volume = 0.35;
+        return audio;
+    })();
+
+    function spawnFirework() {
+        if (!fireworksCanvas) return;
+        const cx = fireworksCanvas.width * 0.5;
+        const cy = fireworksCanvas.height * 0.65;
+        fwParticles = [];
+        const count = 46;
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 * i) / count;
+            const speed = 2.4 + Math.random() * 3.2;
+            fwParticles.push({
+                x: cx,
+                y: cy,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed * 0.9,
+                size: 2 + Math.random() * 2.2,
+                life: 0,
+                maxLife: 60 + Math.random() * 24,
+                color: `hsl(${Math.random() * 360}, 88%, ${55 + Math.random() * 12}%)`
+            });
+        }
+    }
+
+    function renderFireworks() {
+        if (!fwCtx || !fwRunning) return;
+        fwCtx.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+        fwParticles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.05; // gravity
+            p.life++;
+            const alpha = 1 - p.life / p.maxLife;
+            const fade = Math.max(alpha, 0);
+            fwCtx.save();
+            fwCtx.fillStyle = p.color;
+            fwCtx.globalAlpha = fade;
+            fwCtx.shadowColor = p.color;
+            fwCtx.shadowBlur = 12;
+            fwCtx.beginPath();
+            fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            fwCtx.fill();
+            // white core for extra pop
+            fwCtx.shadowBlur = 0;
+            fwCtx.fillStyle = 'rgba(255,255,255,' + (fade * 0.6) + ')';
+            fwCtx.beginPath();
+            fwCtx.arc(p.x, p.y, Math.max(0.8, p.size * 0.4), 0, Math.PI * 2);
+            fwCtx.fill();
+            fwCtx.restore();
+        });
+        fwCtx.globalAlpha = 1;
+        fwParticles = fwParticles.filter(p => p.life < p.maxLife);
+        if (fwParticles.length > 0) {
+            requestAnimationFrame(renderFireworks);
+        } else {
+            fireworksCanvas.style.opacity = 0;
+            if (fireworksOverlay) fireworksOverlay.style.opacity = 0;
+            fwRunning = false;
+        }
+    }
+
+    function triggerMiniFireworks(done) {
+        if (!fireworksCanvas || !fwCtx) {
+            done && done();
+            return;
+        }
+        if (fwCallbackTimer) {
+            clearTimeout(fwCallbackTimer);
+            fwCallbackTimer = null;
+        }
+        spawnFirework();
+        fwRunning = true;
+        try {
+            fwSound.currentTime = 0;
+            fwSound.play().catch(() => {});
+        } catch (e) {}
+        fireworksCanvas.style.opacity = 1;
+        if (fireworksOverlay) fireworksOverlay.style.opacity = 0.5;
+        requestAnimationFrame(renderFireworks);
+        fwCallbackTimer = setTimeout(() => {
+            if (fireworksOverlay) fireworksOverlay.style.opacity = 0;
+            fireworksCanvas.style.opacity = 0;
+            done && done();
+        }, 1300);
+    }
+
+    // --- Kuromoji tokenizer (lazy loaded from CDN, with fallback) ---
+    const kuromojiSources = [
+        {
+            name: 'local',
+            script: './kuromoji.js',
+            dict: './dict/',
+        },
+        {
+            name: 'jsdelivr',
+            script: 'https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.js',
+            dict: 'https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/',
+        },
+        {
+            name: 'unpkg',
+            script: 'https://unpkg.com/kuromoji@0.1.2/build/kuromoji.js',
+            dict: 'https://unpkg.com/kuromoji@0.1.2/dict/',
+        },
+        {
+            name: 'gcore',
+            script: 'https://gcore.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.js',
+            dict: 'https://gcore.jsdelivr.net/npm/kuromoji@0.1.2/dict/',
+        }
+    ];
+    let kuromojiDictPath = kuromojiSources[0].dict;
+    let kuromojiTokenizer = null;
+    let kuromojiReady = false;
+    let kuromojiLoading = null;
+
+    const tokenizerStatus = document.getElementById('tokenizer-status');
+    const setTokenizerStatus = (text) => {
+        if (tokenizerStatus) tokenizerStatus.textContent = text;
+    };
+
+    function loadKuromojiTokenizer(sourceIndex = 0) {
+        if (kuromojiReady && kuromojiTokenizer) return Promise.resolve(kuromojiTokenizer);
+        if (kuromojiLoading) return kuromojiLoading;
+
+        kuromojiLoading = new Promise((resolve, reject) => {
+            const src = kuromojiSources[sourceIndex];
+            if (!src) {
+                setTokenizerStatus('加载失败');
+                reject(new Error('kuromoji sources exhausted'));
+                return;
+            }
+            kuromojiDictPath = src.dict;
+            setTokenizerStatus(`加载中: ${src.name}`);
+
+            const build = () => {
+                try {
+                    window.kuromoji.builder({ dicPath: kuromojiDictPath }).build((err, tokenizer) => {
+                        if (err) {
+                            console.warn('kuromoji build failed', err);
+                            // 尝试下一个源
+                            kuromojiReady = false;
+                            kuromojiTokenizer = null;
+                            kuromojiLoading = null;
+                            loadKuromojiTokenizer(sourceIndex + 1).then(resolve).catch(reject);
+                            return;
+                        }
+                        kuromojiTokenizer = tokenizer;
+                        kuromojiReady = true;
+                        setTokenizerStatus(`已就绪: ${src.name}`);
+                        resolve(tokenizer);
+                    });
+                } catch (e) {
+                    console.warn('kuromoji init failed', e);
+                    kuromojiReady = false;
+                    kuromojiTokenizer = null;
+                    kuromojiLoading = null;
+                    loadKuromojiTokenizer(sourceIndex + 1).then(resolve).catch(reject);
+                }
+            };
+
+            if (window.kuromoji) {
+                build();
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = src.script;
+            script.async = true;
+            script.onload = build;
+            script.onerror = (e) => {
+                console.warn('kuromoji script load failed', e);
+                kuromojiReady = false;
+                kuromojiTokenizer = null;
+                kuromojiLoading = null;
+                loadKuromojiTokenizer(sourceIndex + 1).then(resolve).catch(reject);
+            };
+            document.head.appendChild(script);
+        });
+
+        return kuromojiLoading;
+    }
+
+    // 句子分词函数 (最终优化版: 确保移除句末标点)
+
+    function segmentSentence(sentence, grammarPoint = "") {
+
+        if (!kuromojiReady || !kuromojiTokenizer) {
+            throw new Error('kuromoji tokenizer not ready');
+        }
+
+        // 1. 强制性去除句末标点 (Suggestion 1)
+
+        let cleanedSentence = stripEndingPunctuation(sentence);
+
+        const grammarFixedParts = getGrammarFixedParts(grammarPoint);
+
+        // 仅使用 kuromoji 分词
+        const tokens = kuromojiTokenizer
+            .tokenize(cleanedSentence)
+            .map(t => (t && t.surface_form ? t.surface_form.trim() : ""))
+            .filter(t => t && !/[。．.!?！？]/.test(t));
+        // 根据语法点预先计算需合并的固定片段
+
+        function getGrammarFixedParts(gp) {
+
+            if (!gp) return [];
+
+            const norm = gp.replace(/\s+/g, '');
+
+            const parts = new Set();
+
+            const isPlaceholder = (s) => /[A-Za-z0-9]/.test(s);
+
+            // 1) 按 + / ＋ 拆段，再按 〜 拆段
+
+            norm.split(/[＋+]/).forEach(seg => {
+
+                seg.split('〜').forEach(s => {
+
+                    if (s && !isPlaceholder(s)) parts.add(s);
+
+                });
+
+            });
+
+            // 2) 整体去掉 〜 的字符串
+
+            const noTilde = norm.replace(/〜/g, '');
+
+            if (noTilde && !isPlaceholder(noTilde)) parts.add(noTilde);
+
+            // 3) 捕捉语法点中的日文连续片段（长度>=2）
+
+            const jpSeq = norm.match(/[一-龥ぁ-んァ-ンー]+/g) || [];
+
+            jpSeq.forEach(s => {
+
+                if (s.length >= 2 && !isPlaceholder(s)) parts.add(s);
+
+                // 若包含“ように”，额外加入“ように”
+
+                if (s.includes('ように')) parts.add('ように');
+
+            });
+
+            return Array.from(parts);
+
+        }
+
+        // Merge rules
+
+        const mergedTokens = [];
+
+        for (let i = 0; i < tokens.length; i++) {
+
+            const current = tokens[i];
+
+            const next = tokens[i + 1];
+
+            // Attach comma-like tokens to the previous chip so they don't stand alone
+
+            if ((current === '、' || current === '，' || current === ',') && mergedTokens.length > 0) {
+
+                mergedTokens[mergedTokens.length - 1] += current;
+
+                continue;
+
+            }
+
+            // Keep 「ところ」 as一个词块
+
+            if (current === 'と' && next === 'ころ') {
+
+                mergedTokens.push('ところ');
+
+                i++;
+
+                continue;
+
+            }
+
+            // Keep 「きっと」 as一个词块（避免切成「きっ」「と」）
+
+            if (current === 'きっ' && next === 'と') {
+
+                mergedTokens.push('きっと');
+
+                i++;
+
+                continue;
+
+            }
+
+            // Keep 「ので」作为因果连词
+
+            if (current === 'の' && next === 'で') {
+
+                mergedTokens.push('ので');
+
+                i++;
+
+                continue;
+
+            }
+
+            // Keep 「もう」作为副词
+
+            if (current === 'も' && next === 'う') {
+
+                mergedTokens.push('もう');
+
+                i++;
+
+                continue;
+
+            }
+
+            // Keep こと together
+            if ((current === '\u3053' && next === '\u3068') || (current.endsWith('\u3053') && next === '\u3068')) {
+                mergedTokens.push(current + '\u3068');
+                i++;
+                continue;
+            }
+
+            // Merge 动词て/で形（如 住ん+で → 住んで）
+
+            if ((next === 'で' || next === 'て') && /[ぁ-ゟァ-ヿ一-龯]$/.test(current)) {
+
+                mergedTokens.push(current + next);
+
+                i++;
+
+                continue;
+
+            }
+
+            // Keep よく as一个词块
+
+            if (current === 'よ' && next === 'く') {
+
+                mergedTokens.push('よく');
+
+                i++;
+
+                continue;
+
+            }
+
+            // grammar-based longest match
+
+            let matched = false;
+
+            for (const part of grammarFixedParts) {
+
+                let concat = current;
+
+                let end = i;
+
+                while (end + 1 < tokens.length && concat.length < part.length) {
+
+                    const candidate = concat + tokens[end + 1];
+
+                    if (part.startsWith(candidate)) {
+
+                        end += 1;
+
+                        concat = candidate;
+
+                        if (concat === part) break;
+
+                    } else {
+
+                        break;
+
+                    }
+
+                }
+
+                if (concat === part) {
+
+                    mergedTokens.push(part);
+
+                    i = end;
+
+                    matched = true;
+
+                    break;
+
+                }
+
+            }
+
+            if (matched) continue;
+
+            if (current === 'の' && next === 'は') {
+
+                mergedTokens.push('のは');
+
+                i++;
+
+                continue;
+
+            }
+
+            if (current.endsWith('の') && next === 'は') {
+
+                mergedTokens.push(current + 'は');
+
+                i++;
+
+                continue;
+
+            }
+
+            if (current === 'で' && next === 'す' && i >= tokens.length - 2) {
+
+                mergedTokens.push('です');
+
+                i++;
+
+                continue;
+
+            }
+
+            if (current === 'も' && next && next.startsWith('らえ')) {
+
+                mergedTokens.push('も' + next);
+
+                i++;
+
+                continue;
+
+            }
+
+            // ように / ように言う / ようにする 系的合并
+
+            if ((current === 'よう' && next === 'に') || current === 'ように') {
+
+                let merged = 'ように';
+
+                if (current === 'よう' && next === 'に') {
+
+                    i++; // consume に
+
+                }
+
+                const following = tokens[i + 1];
+
+                if (following && (following.startsWith('言') || following.startsWith('す'))) {
+
+                    merged += following;
+
+                    i++;
+
+                }
+
+                mergedTokens.push(merged);
+
+                continue;
+
+            }
+
+            if (current === 'ように' && next && (next.startsWith('言') || next.startsWith('す'))) {
+
+                mergedTokens.push(current + next);
+
+                i++;
+
+                continue;
+
+            }
+
+            mergedTokens.push(current);
+
+        }
+
+        // Further split long tokens by common particles to avoid oversized chips
+
+        // Further split long tokens by common particles to avoid oversized chips
+
+        const particleSplit = /(\u304c|\u3092|\u306b|\u3067|\u3068|\u3082|\u3078|\u304b\u3089|\u307e\u3067|\u306f|\u3060)/u;
+        const grammarFixedSet = new Set(grammarFixedParts);
+
+        // 动词结尾拆分，避免一大坑词块
+        function splitByVerbEndings(token) {
+            const endings = [
+                "\u3066\u3044\u307e\u305b\u3093", // ていません
+                "\u3066\u3044\u306a\u3044",     // ていない
+                "\u3066\u3044\u307e\u3059",     // ています
+                "\u3066\u307e\u3059",           // てます
+                "\u307e\u305b\u3093",           // ません
+                "\u307e\u3057\u305f",           // ました
+                "\u307e\u3059",                 // ます
+                "\u306a\u3044",                 // ない
+                "\u3067\u3059",                 // です
+                "\u3060",                       // だ
+                "\u3067\u3057\u305f",           // でした
+                "\u3060\u3063\u305f",           // だった
+                "\u3066\u3044\u308b",           // ている
+                "\u3066\u3044\u305f"            // ていた
+            ];
+
+            for (const end of endings) {
+                if (token.length <= end.length + 1) continue;
+                if (token.endsWith(end)) {
+                    return [token.slice(0, -end.length), end];
+                }
+            }
+
+            const m = token.match(/(.+?)([\u3066\u3067]\u3044(?:\u306a\u3044|\u307e\u305b\u3093|\u307e\u3059)?)/u);
+            if (m && m[1] && m[2] && m[1].length > 0) {
+                const consumed = m[1] + m[2];
+                const tail = token.slice(consumed.length);
+                return tail ? [m[1], m[2], tail] : [m[1], m[2]];
+            }
+
+            return null;
+        }
+
+        function splitLongToken(tok) {
+            if (tok.length < 7 || grammarFixedSet.has(tok)) return [tok];
+
+            if (particleSplit.test(tok)) {
+                const parts = tok.split(particleSplit).filter(Boolean);
+                if (parts.length > 1) return parts.flatMap(splitLongToken);
+            }
+
+            const verbSplit = splitByVerbEndings(tok);
+            if (verbSplit) return verbSplit.flatMap(splitLongToken);
+
+            return [tok];
+        }
+        const finalTokens = mergedTokens.flatMap(splitLongToken);
+        return finalTokens;
+
+    }
+
+// 洗牌算法
+
+    function shuffle(array) {
+
+        for (let i = array.length - 1; i > 0; i--) {
+
+            const j = Math.floor(Math.random() * (i + 1));
+
+            [array[i], array[j]] = [array[j], array[i]];
+
+        }
+
+        return array;
+
+    }
+
+    function clearAutoNext() {
+        if (autoNextTimer) {
+            clearTimeout(autoNextTimer);
+            autoNextTimer = null;
+        }
+    }
+
+    function scheduleAutoNext(delay = 800) {
+        clearAutoNext();
+        autoNextTimer = setTimeout(() => generateQuestion(), delay);
+    }
+
+    // Play full sentence then auto-next (fallback to timer if speech unsupported)
+    function playSentenceAndAutoNext() {
+        clearAutoNext();
+
+        const sentence = stripEndingPunctuation(currentQuestion?.sentence || '');
+        if (!sentence) {
+            scheduleAutoNext();
+            return;
+        }
+
+        const synthAvailable = (typeof window !== 'undefined' && 'speechSynthesis' in window);
+        if (!synthAvailable) {
+            scheduleAutoNext(1000);
+            return;
+        }
+
+        if (!preferredVoice) preferredVoice = pickVoice();
+
+        const utter = new SpeechSynthesisUtterance(sentence);
+        if (preferredVoice) utter.voice = preferredVoice;
+        utter.lang = (preferredVoice && preferredVoice.lang) || 'ja-JP';
+        utter.rate = 1;
+        utter.pitch = 1;
+
+        let ended = false;
+        utter.onend = () => {
+            ended = true;
+            scheduleAutoNext(600);
+        };
+        utter.onerror = () => {
+            if (!ended) scheduleAutoNext(800);
+        };
+
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+
+        // Fallback: poll speaking state; only强制跳转 when超时
+        const maxWait = Math.max(3000, Math.min(sentence.length * 350, 15000));
+        const start = Date.now();
+        const poll = () => {
+            if (ended) return;
+            const elapsed = Date.now() - start;
+            if (!window.speechSynthesis.speaking) {
+                ended = true;
+                scheduleAutoNext(800);
+                return;
+            }
+            if (elapsed >= maxWait) {
+                ended = true;
+                window.speechSynthesis.cancel();
+                scheduleAutoNext(800);
+                return;
+            }
+            setTimeout(poll, 500);
+        };
+        setTimeout(poll, 500);
+    }
+
+    // 生成新的题目
+
+    function generateQuestion(advance = true) {
+
+        clearAutoNext();
+
+        if (!kuromojiReady || !kuromojiTokenizer) {
+            setTokenizerStatus('分词未就绪，正在加载…');
+            loadKuromojiTokenizer()
+                .then(() => generateQuestion(advance))
+                .catch(() => {
+                    setTokenizerStatus('加载失败');
+                    alert('kuromoji 词典加载失败，无法进行精确分词。');
+                });
+            return;
+        }
+
+        pickQuestionIndex(advance);
+
+        const dataIndex = currentQuestionIndex % grammarData.length;
+
+        currentQuestion = grammarData[dataIndex];
+
+        
+
+        questionHistory.push(currentQuestion.sentence);
+
+        
+
+        questionNumberDisplay.textContent = currentQuestionIndex + 1;
+
+        grammarDisplay.textContent = currentQuestion.grammar;
+
+        if (translationHint) translationHint.textContent = currentQuestion.translation || '';
+
+        updateProgressUI();
+        updateModeUI();
+
+        saveProgress();
+
+        hasChecked = false;
+
+        isCurrentCorrect = false;
+
+        
+
+        const correctOrder = segmentSentence(currentQuestion.sentence, currentQuestion.grammar);
+
+        const shuffledOrder = shuffle([...correctOrder]);
+
+        shuffledArea.innerHTML = '';
+
+        answerArea.innerHTML = '';
+
+        resultArea.style.display = 'none';
+
+        resultArea.className = '';
+
+        checkButton.style.display = 'inline-block';
+
+        shuffledOrder.forEach((word, index) => {
+
+            const chip = document.createElement('span');
+
+            chip.className = 'word-chip';
+
+            chip.textContent = word;
+
+            chip.dataset.originalIndex = index;
+
+            attachSpeechToChip(chip);
+
+            chip.onclick = () => moveChip(chip, 'to-answer');
+
+            shuffledArea.appendChild(chip);
+
+        });
+
+    }
+
+    // 移动词块
+
+    function moveChip(chip, direction) {
+
+        if (checkButton.style.display === 'none') return;
+
+        if (direction === 'to-answer') {
+
+            chip.className = 'answer-chip';
+
+            enableAnswerDrag(chip);
+
+            chip.onclick = () => moveChip(chip, 'to-shuffled');
+
+            answerArea.appendChild(chip);
+
+        } else {
+
+            chip.className = 'word-chip';
+
+            disableAnswerDrag(chip);
+
+            chip.onclick = () => moveChip(chip, 'to-answer');
+
+            shuffledArea.appendChild(chip);
+
+        }
+
+    }
+
+    // 检查答案
+
+    function checkAnswer() {
+
+        if (answerArea.children.length === 0) {
+
+            alert("����ƴ�þ������ύ��");
+
+            return;
+
+        }
+
+        clearAutoNext();
+
+        const correctSentence = stripEndingPunctuation(currentQuestion.sentence).replace(/\s+/g, "");
+
+        const userSentence = Array.from(answerArea.children)
+
+            .map(chip => chip.textContent.trim())
+
+            .join("")
+
+            .replace(/\s+/g, "");
+
+        resultArea.style.display = 'block';
+
+        checkButton.style.display = 'none';
+
+        correctJapanese.textContent = stripEndingPunctuation(currentQuestion.sentence);
+
+        correctChinese.textContent = currentQuestion.translation;
+
+        if (userSentence === correctSentence) {
+
+            resultMessage.textContent = '正确! 你的拼句全部正确';
+
+            resultArea.className = 'correct';
+
+            isCurrentCorrect = true;
+
+            if (wrongSet.has(currentQuestionIndex)) {
+
+                wrongSet.delete(currentQuestionIndex);
+
+                if (mode === 'wrong') {
+                    wrongPointer = wrongSet.size ? Math.min(wrongPointer, wrongSet.size - 1) : 0;
+                }
+
+                if (mode === 'wrong' && wrongSet.size === 0) {
+
+                    alert('错题本已清空，返回全题模式');
+
+                    mode = 'all';
+
+                    wrongPointer = 0;
+
+                }
+
+                saveProgress();
+                updateModeUI();
+
+            }
+
+            triggerMiniFireworks(() => {
+                if (enableReading) {
+                    playSentenceAndAutoNext();
+                } else {
+                    scheduleAutoNext(800);
+                }
+            });
+
+        } else {
+
+            resultMessage.textContent = '错误! 看看正确答案吧。';
+
+            resultArea.className = '';
+
+            isCurrentCorrect = false;
+
+            if (!wrongSet.has(currentQuestionIndex)) {
+
+                wrongSet.add(currentQuestionIndex);
+
+                saveProgress();
+                updateModeUI();
+
+            }
+
+        }
+
+        hasChecked = true;
+
+        Array.from(shuffledArea.children).forEach(chip => chip.onclick = null);
+
+        Array.from(answerArea.children).forEach(chip => chip.onclick = null);
+
+    }
+
+    function resetSentence() {
+
+        // 重新洗牌当前题，不切换题号
+
+        generateQuestion(false);
+
+        resultArea.style.display = 'none';
+
+        resultArea.className = '';
+
+        checkButton.style.display = 'inline-block';
+
+        hasChecked = false;
+
+        isCurrentCorrect = false;
+
+    }
+
+    function resetProgress() {
+
+        currentQuestionIndex = 0;
+
+        questionHistory = [];
+
+        wrongSet.clear();
+
+        mode = 'all';
+
+        wrongPointer = 0;
+
+        saveProgress();
+
+        updateModeUI();
+
+        generateQuestion(false);
+
+    }
+
+    // 事件监听器
+
+    checkButton.addEventListener('click', checkAnswer);
+
+    nextButton.addEventListener('click', () => {
+
+        if (!hasChecked) {
+
+            alert('请先检查答案，再进入下一题');
+
+            return;
+
+        }
+
+        if (!isCurrentCorrect) {
+
+            alert('本题尚未答对，请再尝试一次');
+
+            return;
+
+        }
+
+        generateQuestion();
+
+    });
+
+    resetButton.addEventListener('click', resetSentence);
+
+    progressResetButton.addEventListener('click', resetProgress);
+
+    wrongModeButton.addEventListener('click', () => {
+        if (wrongSet.size === 0) {
+            alert('当前没有错题记录，无法进入错题重练');
+            return;
+        }
+        mode = 'wrong';
+        wrongPointer = 0;
+        saveProgress();
+        updateModeUI();
+        generateQuestion(false);
+    });
+
+    allModeButton.addEventListener('click', () => {
+        mode = 'all';
+        wrongPointer = 0;
+        saveProgress();
+        updateModeUI();
+        generateQuestion(false);
+    });
+
+    loadProgress();
+
+    updateProgressUI();
+
+    updateModeUI();
+
+    // 预加载 kuromoji 词典（失败则提示并阻止分词）
+    loadKuromojiTokenizer()
+        .then(() => {
+            generateQuestion(false);
+        })
+        .catch(() => {
+            setTokenizerStatus('加载失败');
+            alert('kuromoji 词典加载失败，无法进行精确分词。');
+        });
+
+</script>
+
+</body>
+
+</html>
