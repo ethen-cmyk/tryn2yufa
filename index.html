@@ -2933,10 +2933,17 @@
         const grammarFixedParts = getGrammarFixedParts(grammarPoint);
 
         // 仅使用 kuromoji 分词
-        const tokens = kuromojiTokenizer
-            .tokenize(cleanedSentence)
-            .map(t => (t && t.surface_form ? t.surface_form.trim() : ""))
-            .filter(t => t && !/[。．.!?！？]/.test(t));
+        const rawKuromojiTokens = kuromojiTokenizer.tokenize(cleanedSentence);
+        const filteredTokens = [];
+        const filteredRawTokens = [];
+        rawKuromojiTokens.forEach(t => {
+            const surf = t && t.surface_form ? t.surface_form.trim() : "";
+            if (surf && !/[。．.!?！？]/.test(surf)) {
+                filteredTokens.push(surf);
+                filteredRawTokens.push(t);
+            }
+        });
+        const tokens = filteredTokens;
         // 根据语法点预先计算需合并的固定片段
 
         function getGrammarFixedParts(gp) {
@@ -2994,15 +3001,34 @@
             const current = tokens[i];
 
             const next = tokens[i + 1];
+            const rt = filteredRawTokens[i];
+            const rt1 = filteredRawTokens[i + 1];
 
             // Attach comma-like tokens to the previous chip so they don't stand alone
 
             if ((current === '、' || current === '，' || current === ',') && mergedTokens.length > 0) {
 
-                mergedTokens[mergedTokens.length - 1] += current;
+                if (typeof mergedTokens[mergedTokens.length - 1] === 'object') {
+                    mergedTokens[mergedTokens.length - 1].text += current;
+                } else {
+                    mergedTokens[mergedTokens.length - 1] += current;
+                }
 
                 continue;
 
+            }
+
+            // 動詞/形容詞 + 助動詞「た」→ 行った / なった / 小さかった
+            if (
+                rt &&
+                rt1 &&
+                (rt.pos === '動詞' || rt.pos === '形容詞') &&
+                rt1.pos === '助動詞' &&
+                (rt1.basic_form === 'た' || rt1.surface_form === 'た')
+            ) {
+                mergedTokens.push({ text: current + next, locked: true });
+                i += 1;
+                continue;
             }
 
             // Keep 「ところ」 as一个词块
@@ -3216,10 +3242,10 @@
 
         // Further split long tokens by common particles to avoid oversized chips
 
+                // Further split long tokens by common particles to avoid oversized chips
         const particleSplit = /(\u304c|\u3092|\u306b|\u3067|\u3068|\u3082|\u3078|\u304b\u3089|\u307e\u3067|\u306f|\u3060)/u;
         const grammarFixedSet = new Set(grammarFixedParts);
 
-        // 动词结尾拆分，避免一大坑词块
         function splitByVerbEndings(token) {
             const endings = [
                 "\u3066\u3044\u307e\u305b\u3093", // ていません
@@ -3256,17 +3282,20 @@
         }
 
         function splitLongToken(tok) {
-            if (tok.length < 7 || grammarFixedSet.has(tok)) return [tok];
+            const locked = typeof tok === 'object' && tok.locked;
+            const txt = typeof tok === 'object' ? tok.text : tok;
+            if (locked) return [txt];
+            if (txt.length < 7 || grammarFixedSet.has(txt)) return [txt];
 
-            if (particleSplit.test(tok)) {
-                const parts = tok.split(particleSplit).filter(Boolean);
+            if (particleSplit.test(txt)) {
+                const parts = txt.split(particleSplit).filter(Boolean);
                 if (parts.length > 1) return parts.flatMap(splitLongToken);
             }
 
-            const verbSplit = splitByVerbEndings(tok);
+            const verbSplit = splitByVerbEndings(txt);
             if (verbSplit) return verbSplit.flatMap(splitLongToken);
 
-            return [tok];
+            return [txt];
         }
         const finalTokens = mergedTokens.flatMap(splitLongToken);
         return finalTokens;
@@ -3677,4 +3706,5 @@
 </body>
 
 </html>
+
 
