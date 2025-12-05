@@ -1743,18 +1743,18 @@
   },
   {
     "grammar": "～につけ",
-    "sentence": "雨につけ雪につけ、彼は走りに行く。",
-    "translation": "无论下雨下雪他都去跑步。"
+    "sentence": "この曲を聞くにつけ、遠い故郷の家族のことを思い出す。",
+    "translation": "无每当听到这首歌，我就会想起遥远家乡的家人。"
   },
   {
     "grammar": "～につけ",
-    "sentence": "何かにつけ彼女を思い出す。",
-    "translation": "一遇到什么事就想起她。"
+    "sentence": "この写真を見るにつけ、故郷を思い出す。",
+    "translation": "每当看到这张照片，就会想起故乡。。"
   },
   {
     "grammar": "～につけ",
-    "sentence": "嬉しいにつけ悲しいにつけ、家族に連絡する。",
-    "translation": "无论高兴还是悲伤都会联系家人。"
+    "sentence": "成長する姿を見るにつけ、親として嬉しくなる。",
+    "translation": "无每次看到孩子成长，作为父母都会高兴。"
   },
   {
     "grammar": "～からこそ",
@@ -1973,13 +1973,13 @@
   },
   {
     "grammar": "～としたら",
-    "sentence": "彼が来ないとしたら誰が説明する？",
-    "translation": "如果他不来谁来说明？"
+    "sentence": "彼が来ないとしたら誰が説明する",
+    "translation": "如果他不来谁来说明"
   },
   {
     "grammar": "～としたら",
-    "sentence": "君が社長だとしたらどう決める？",
-    "translation": "如果你是社长会怎么定？"
+    "sentence": "君が社長だとしたらどう決める",
+    "translation": "如果你是社长会怎么定"
   },
   {
     "grammar": "～次第で",
@@ -2320,6 +2320,9 @@
 
     let currentQuestionIndex = 0;
 
+    // 独立记录全题模式的游标，避免错题模式覆盖正常进度
+    let allPointer = 0;
+
     let questionHistory = [];
 
     let hasChecked = false;
@@ -2344,7 +2347,8 @@
 
             if (!isNaN(saved) && saved >= 0 && saved < totalQuestions) {
 
-                currentQuestionIndex = saved; // zero-based pointer
+                allPointer = saved; // zero-based pointer
+                currentQuestionIndex = saved;
 
             }
 
@@ -2382,7 +2386,8 @@
 
         try {
 
-            localStorage.setItem('try_n3_progress_index', String(currentQuestionIndex));
+            // 仅按全题模式的游标保存进度，避免错题模式覆盖
+            localStorage.setItem('try_n3_progress_index', String(allPointer));
 
             localStorage.setItem('try_n3_wrong_indices', JSON.stringify(Array.from(wrongSet)));
 
@@ -2448,8 +2453,9 @@
         }
 
         if (advance) {
-            currentQuestionIndex = (currentQuestionIndex + 1) % grammarData.length;
+            allPointer = (allPointer + 1) % grammarData.length;
         }
+        currentQuestionIndex = allPointer;
     }
 
     // Strip end-of-sentence punctuation so it never becomes a sortable chip
@@ -3617,6 +3623,7 @@
     function resetProgress() {
 
         currentQuestionIndex = 0;
+        allPointer = 0;
 
         questionHistory = [];
 
